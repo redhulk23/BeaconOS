@@ -6,6 +6,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { requestIdMiddleware } from "./middleware/request-id.js";
 import { health } from "./routes/health.js";
 import { agents } from "./routes/agents.js";
+import { runs } from "./routes/runs.js";
 
 export function createApp() {
   const app = new Hono();
@@ -24,6 +25,7 @@ export function createApp() {
   // Authenticated routes
   app.use("/api/v1/*", authMiddleware());
   app.route("/api/v1/agents", agents);
+  app.route("/api/v1", runs);
 
   return app;
 }

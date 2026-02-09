@@ -1,5 +1,5 @@
 {
-  "name": "@beacon-os/api",
+  "name": "@beacon-os/kernel",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,8 +13,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
+    "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src/",
@@ -24,16 +23,11 @@
     "@beacon-os/common": "workspace:*",
     "@beacon-os/db": "workspace:*",
     "@beacon-os/audit": "workspace:*",
-    "@beacon-os/auth": "workspace:*",
-    "@beacon-os/kernel": "workspace:*",
     "@beacon-os/model-router": "workspace:*",
-    "hono": "^4.6.0",
-    "@hono/node-server": "^1.13.0",
-    "zod": "^3.24.0",
-    "drizzle-orm": "^0.38.0"
+    "drizzle-orm": "^0.38.0",
+    "ioredis": "^5.4.0"
   },
   "devDependencies": {
-    "tsx": "^4.19.0",
     "typescript": "^5.7.0",
     "tsup": "^8.3.0",
     "vitest": "^2.1.0"
