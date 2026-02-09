@@ -7,6 +7,7 @@ import { requestIdMiddleware } from "./middleware/request-id.js";
 import { health } from "./routes/health.js";
 import { agents } from "./routes/agents.js";
 import { runs } from "./routes/runs.js";
+import { tools } from "./routes/tools.js";
 
 export function createApp() {
   const app = new Hono();
@@ -26,6 +27,7 @@ export function createApp() {
   app.use("/api/v1/*", authMiddleware());
   app.route("/api/v1/agents", agents);
   app.route("/api/v1", runs);
+  app.route("/api/v1/tools", tools);
 
   return app;
 }

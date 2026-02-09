@@ -1,0 +1,37 @@
+{
+  "name": "@beacon-os/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@beacon-os/common": "workspace:*",
+    "@beacon-os/db": "workspace:*",
+    "@beacon-os/audit": "workspace:*",
+    "@beacon-os/model-router": "workspace:*",
+    "@beacon-os/kernel": "workspace:*",
+    "@beacon-os/tools": "workspace:*",
+    "yaml": "^2.6.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.0"
+  }
+}
