@@ -1,0 +1,36 @@
+{
+  "name": "@beacon-os/agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@beacon-os/common": "workspace:*",
+    "@beacon-os/cre-data-model": "workspace:*",
+    "@beacon-os/cre-doc-intel": "workspace:*",
+    "@beacon-os/cre-connectors": "workspace:*",
+    "@beacon-os/cre-compliance": "workspace:*",
+    "@beacon-os/sdk": "workspace:*",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.0"
+  }
+}
