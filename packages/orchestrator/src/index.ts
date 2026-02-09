@@ -1,0 +1,14 @@
+export { OrchestrationEngine, type OrchestrationDeps } from "./engine.js";
+export { parseWorkflow, parseWorkflowFromObject, type WorkflowDefinitionParsed, type WorkflowStep, type StepType } from "./workflow-parser.js";
+export { executeStep, type StepExecutionContext, type StepResult } from "./step-executor.js";
+export { type WorkflowStatus, type StepStatus, type WorkflowState, createInitialState, canTransition, isTerminal } from "./state-machine.js";
+export { saveCheckpoint, loadCheckpoint } from "./checkpoint.js";
+export { createApprovalRequest, submitDecision, getApprovalStatus, waitForApproval, type ApprovalRequest, type ApprovalDecision } from "./hitl/approval-gate.js";
+export { runSequential } from "./patterns/sequential.js";
+export { runFanOutGather } from "./patterns/fan-out-gather.js";
+export { runHumanInTheLoop } from "./patterns/human-in-the-loop.js";
+export { runCoordinator } from "./patterns/coordinator.js";
+export { runIterativeRefinement } from "./patterns/iterative-refinement.js";
+export { runHierarchical } from "./patterns/hierarchical.js";
+export { runConsensus } from "./patterns/consensus.js";
+export { runBlackboard } from "./patterns/blackboard.js";

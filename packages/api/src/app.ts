@@ -8,6 +8,8 @@ import { health } from "./routes/health.js";
 import { agents } from "./routes/agents.js";
 import { runs } from "./routes/runs.js";
 import { tools } from "./routes/tools.js";
+import { workflows } from "./routes/workflows.js";
+import { approvals } from "./routes/approvals.js";
 
 export function createApp() {
   const app = new Hono();
@@ -28,6 +30,8 @@ export function createApp() {
   app.route("/api/v1/agents", agents);
   app.route("/api/v1", runs);
   app.route("/api/v1/tools", tools);
+  app.route("/api/v1/workflows", workflows);
+  app.route("/api/v1/approval-requests", approvals);
 
   return app;
 }
