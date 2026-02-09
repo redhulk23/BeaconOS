@@ -1,0 +1,24 @@
+{
+  "name": "beacon-os",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --filter=@beacon-os/api",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"packages/*/src/**/*.ts\"",
+    "db:generate": "pnpm --filter @beacon-os/db run generate",
+    "db:migrate": "pnpm --filter @beacon-os/db run migrate",
+    "db:studio": "pnpm --filter @beacon-os/db run studio",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0",
+    "prettier": "^3.4.0",
+    "eslint": "^9.17.0",
+    "vitest": "^2.1.0",
+    "tsup": "^8.3.0"
+  }
+}
