@@ -7,6 +7,7 @@ import {
   boolean,
   varchar,
   index,
+  numeric,
 } from "drizzle-orm/pg-core";
 
 // --- Tenants ---
@@ -307,5 +308,86 @@ export const approvalRequests = pgTable(
     index("approval_requests_tenant_id_idx").on(t.tenantId),
     index("approval_requests_status_idx").on(t.status),
     index("approval_requests_run_id_idx").on(t.runId),
+  ],
+);
+
+// --- Tenant Settings ---
+export const tenantSettings = pgTable(
+  "tenant_settings",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    key: varchar("key", { length: 100 }).notNull(),
+    value: jsonb("value").notNull().$type<Record<string, unknown>>(),
+    category: varchar("category", { length: 50 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("tenant_settings_tenant_id_idx").on(t.tenantId),
+    index("tenant_settings_tenant_key_idx").on(t.tenantId, t.key),
+  ],
+);
+
+// --- ABAC Policies ---
+export const abacPolicies = pgTable(
+  "abac_policies",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    name: text("name").notNull(),
+    description: text("description"),
+    effect: varchar("effect", { length: 10 }).notNull().$type<"allow" | "deny">(),
+    subjectAttributes: jsonb("subject_attributes").default({}).$type<Record<string, unknown>>(),
+    resourceAttributes: jsonb("resource_attributes").default({}).$type<Record<string, unknown>>(),
+    actionAttributes: jsonb("action_attributes").default({}).$type<Record<string, unknown>>(),
+    conditions: jsonb("conditions").default([]).$type<Record<string, unknown>[]>(),
+    priority: integer("priority").notNull().default(0),
+    status: varchar("status", { length: 20 }).notNull().default("active").$type<"active" | "inactive">(),
+    createdBy: text("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("abac_policies_tenant_id_idx").on(t.tenantId),
+    index("abac_policies_status_idx").on(t.status),
+  ],
+);
+
+// --- Telemetry Spans ---
+export const telemetrySpans = pgTable(
+  "telemetry_spans",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => tenants.id),
+    traceId: varchar("trace_id", { length: 32 }).notNull(),
+    spanId: varchar("span_id", { length: 16 }).notNull(),
+    parentSpanId: varchar("parent_span_id", { length: 16 }),
+    operationName: varchar("operation_name", { length: 200 }).notNull(),
+    serviceName: varchar("service_name", { length: 100 }).notNull(),
+    kind: varchar("kind", { length: 20 }).notNull().default("internal"),
+    status: varchar("status", { length: 20 }).notNull().default("ok"),
+    startTime: timestamp("start_time", { withTimezone: true }).notNull(),
+    endTime: timestamp("end_time", { withTimezone: true }),
+    durationMs: numeric("duration_ms", { precision: 12, scale: 2 }),
+    attributes: jsonb("attributes").default({}).$type<Record<string, unknown>>(),
+    events: jsonb("events").default([]).$type<Record<string, unknown>[]>(),
+    agentId: text("agent_id"),
+    runId: text("run_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("telemetry_spans_tenant_id_idx").on(t.tenantId),
+    index("telemetry_spans_trace_id_idx").on(t.traceId),
+    index("telemetry_spans_agent_id_idx").on(t.agentId),
+    index("telemetry_spans_run_id_idx").on(t.runId),
+    index("telemetry_spans_start_time_idx").on(t.startTime),
+    index("telemetry_spans_operation_name_idx").on(t.operationName),
   ],
 );

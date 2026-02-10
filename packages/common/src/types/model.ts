@@ -1,4 +1,4 @@
-export type ModelProvider = "claude" | "openai" | "custom";
+export type ModelProvider = "claude" | "openai" | "google" | "custom";
 
 export interface ModelRequest {
   provider: ModelProvider;

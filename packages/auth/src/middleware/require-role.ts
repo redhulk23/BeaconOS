@@ -53,3 +53,54 @@ export function requirePermission(...permissions: Permission[]): MiddlewareHandl
     await next();
   };
 }
+
+export function requireAbac(resourceType: string, action: string): MiddlewareHandler {
+  return async (c, next) => {
+    const user = c.get("user");
+
+    if (!user) {
+      throw new AuthorizationError("No authenticated user");
+    }
+
+    // Import dynamically to avoid circular deps at module level
+    const { AbacEvaluator } = await import("../abac/evaluator.js");
+    const { PolicyStore } = await import("../abac/policy-store.js");
+
+    const store = new PolicyStore();
+    const evaluator = new AbacEvaluator();
+    const tenantId = c.get("tenantId") as string;
+    const policies = await store.getPoliciesForTenant(tenantId);
+
+    if (policies.length === 0) {
+      // Fall back to RBAC if no ABAC policies exist
+      await next();
+      return;
+    }
+
+    const context = {
+      subject: {
+        userId: user.id,
+        role: user.role,
+        tenantId,
+      },
+      resource: {
+        type: resourceType,
+      },
+      action: {
+        type: action,
+      },
+      environment: {
+        clientIp: c.req.header("x-forwarded-for") ?? "unknown",
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    const decision = evaluator.evaluate(policies, context);
+
+    if (decision.result === "deny") {
+      throw new AuthorizationError(`Access denied by ABAC policy: ${decision.reason}`);
+    }
+
+    await next();
+  };
+}

@@ -6,3 +6,6 @@ export type StepId = string & { readonly __brand: "StepId" };
 export type ToolId = string & { readonly __brand: "ToolId" };
 export type WorkflowId = string & { readonly __brand: "WorkflowId" };
 export type ApiKeyId = string & { readonly __brand: "ApiKeyId" };
+export type PolicyId = string & { readonly __brand: "PolicyId" };
+export type SpanId = string & { readonly __brand: "SpanId" };
+export type TraceId = string & { readonly __brand: "TraceId" };

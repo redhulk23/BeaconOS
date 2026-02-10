@@ -24,6 +24,11 @@ export const Permission = {
   AUDIT_READ: "audit:read",
   USERS_MANAGE: "users:manage",
   API_KEYS_MANAGE: "api_keys:manage",
+  POLICIES_MANAGE: "policies:manage",
+  POLICIES_READ: "policies:read",
+  TENANTS_MANAGE: "tenants:manage",
+  TENANTS_READ: "tenants:read",
+  TELEMETRY_READ: "telemetry:read",
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];
@@ -42,6 +47,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     Permission.WORKFLOWS_READ,
     Permission.WORKFLOWS_RUN,
     Permission.APPROVALS_READ,
+    Permission.TELEMETRY_READ,
   ],
   [Role.OPERATOR]: [
     Permission.AGENTS_READ,
@@ -53,6 +59,8 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     Permission.APPROVALS_DECIDE,
     Permission.APPROVALS_READ,
     Permission.AUDIT_READ,
+    Permission.TENANTS_READ,
+    Permission.TELEMETRY_READ,
   ],
   [Role.VIEWER]: [
     Permission.AGENTS_READ,

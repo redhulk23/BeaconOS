@@ -28,6 +28,7 @@
     "@beacon-os/kernel": "workspace:*",
     "@beacon-os/model-router": "workspace:*",
     "@beacon-os/orchestrator": "workspace:*",
+    "@beacon-os/telemetry": "workspace:*",
     "hono": "^4.6.0",
     "@hono/node-server": "^1.13.0",
     "zod": "^3.24.0",

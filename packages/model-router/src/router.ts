@@ -2,6 +2,8 @@ import { createLogger } from "@beacon-os/common";
 import type { ModelRequest, ModelResponse, ModelStreamChunk } from "@beacon-os/common";
 import type { ModelProvider } from "./providers/base.js";
 import { ClaudeProvider } from "./providers/claude.js";
+import { OpenAIProvider } from "./providers/openai.js";
+import { GoogleProvider } from "./providers/google.js";
 import { TokenTracker } from "./token-tracker.js";
 import { FallbackChain } from "./fallback.js";
 import { getAuditLogger } from "@beacon-os/audit";
@@ -34,6 +36,16 @@ export class ModelRouter {
     // Register default Claude provider
     if (!config.providers?.claude) {
       this.providers.set("claude", new ClaudeProvider());
+    }
+
+    // Auto-register OpenAI if API key available
+    if (!config.providers?.openai && process.env.OPENAI_API_KEY) {
+      this.providers.set("openai", new OpenAIProvider());
+    }
+
+    // Auto-register Google if API key available
+    if (!config.providers?.google && process.env.GOOGLE_AI_API_KEY) {
+      this.providers.set("google", new GoogleProvider());
     }
 
     // Register custom providers

@@ -1,5 +1,5 @@
 import { ulid } from "ulid";
-import type { TenantId, UserId, AgentId, RunId, StepId, ToolId, WorkflowId, ApiKeyId } from "../types/ids.js";
+import type { TenantId, UserId, AgentId, RunId, StepId, ToolId, WorkflowId, ApiKeyId, PolicyId, SpanId, TraceId } from "../types/ids.js";
 
 export function generateId(): string {
   return ulid();
@@ -35,4 +35,16 @@ export function generateWorkflowId(): WorkflowId {
 
 export function generateApiKeyId(): ApiKeyId {
   return `key_${ulid()}` as ApiKeyId;
+}
+
+export function generatePolicyId(): PolicyId {
+  return `pol_${ulid()}` as PolicyId;
+}
+
+export function generateSpanId(): SpanId {
+  return `spn_${ulid()}` as SpanId;
+}
+
+export function generateTraceId(): TraceId {
+  return `trc_${ulid()}` as TraceId;
 }

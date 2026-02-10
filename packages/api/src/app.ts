@@ -10,6 +10,9 @@ import { runs } from "./routes/runs.js";
 import { tools } from "./routes/tools.js";
 import { workflows } from "./routes/workflows.js";
 import { approvals } from "./routes/approvals.js";
+import { telemetry } from "./routes/telemetry.js";
+import { policies } from "./routes/policies.js";
+import { tenantsRouter } from "./routes/tenants.js";
 
 export function createApp() {
   const app = new Hono();
@@ -32,6 +35,9 @@ export function createApp() {
   app.route("/api/v1/tools", tools);
   app.route("/api/v1/workflows", workflows);
   app.route("/api/v1/approval-requests", approvals);
+  app.route("/api/v1/telemetry", telemetry);
+  app.route("/api/v1/policies", policies);
+  app.route("/api/v1/tenants", tenantsRouter);
 
   return app;
 }
