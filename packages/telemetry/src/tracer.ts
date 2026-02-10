@@ -1,4 +1,10 @@
-import { trace, context as otelContext, SpanStatusCode, type Span as OtelSpan, type Tracer } from "@opentelemetry/api";
+import {
+  trace,
+  context as otelContext,
+  SpanStatusCode,
+  type Span as OtelSpan,
+  type Tracer,
+} from "@opentelemetry/api";
 import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { Resource } from "@opentelemetry/resources";
@@ -45,7 +51,8 @@ export class BeaconTracer {
 
   startSpan(name: string, options?: SpanOptions): OtelSpan {
     const span = this.tracer.startSpan(name);
-    if (options?.tenantId) span.setAttribute("beacon.tenant_id", options.tenantId);
+    if (options?.tenantId)
+      span.setAttribute("beacon.tenant_id", options.tenantId);
     if (options?.agentId) span.setAttribute("beacon.agent_id", options.agentId);
     if (options?.runId) span.setAttribute("beacon.run_id", options.runId);
     if (options?.attributes) {
@@ -60,10 +67,17 @@ export class BeaconTracer {
     return trace.getActiveSpan();
   }
 
-  async withSpan<T>(name: string, options: SpanOptions, fn: (span: OtelSpan) => Promise<T>): Promise<T> {
+  async withSpan<T>(
+    name: string,
+    options: SpanOptions,
+    fn: (span: OtelSpan) => Promise<T>,
+  ): Promise<T> {
     const span = this.startSpan(name, options);
     try {
-      const result = await otelContext.with(trace.setSpan(otelContext.active(), span), () => fn(span));
+      const result = await otelContext.with(
+        trace.setSpan(otelContext.active(), span),
+        () => fn(span),
+      );
       span.setStatus({ code: SpanStatusCode.OK });
       return result;
     } catch (error) {

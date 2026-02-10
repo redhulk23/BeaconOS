@@ -36,10 +36,16 @@ export const creProperties = pgTable(
     parkingSpaces: integer("parking_spaces"),
     occupancyRate: numeric("occupancy_rate", { precision: 5, scale: 2 }),
     currentValue: numeric("current_value", { precision: 15, scale: 2 }),
-    externalIds: jsonb("external_ids").default({}).$type<Record<string, string>>(),
+    externalIds: jsonb("external_ids")
+      .default({})
+      .$type<Record<string, string>>(),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("cre_properties_tenant_id_idx").on(t.tenantId),
@@ -67,8 +73,12 @@ export const creUnits = pgTable(
     monthlyRent: numeric("monthly_rent", { precision: 12, scale: 2 }),
     marketRent: numeric("market_rent", { precision: 12, scale: 2 }),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("cre_units_property_id_idx").on(t.propertyId),
@@ -104,10 +114,16 @@ export const creLeases = pgTable(
     taxCharges: numeric("tax_charges", { precision: 12, scale: 2 }),
     asc842Classification: varchar("asc842_classification", { length: 30 }),
     abstractedData: jsonb("abstracted_data").$type<Record<string, unknown>>(),
-    externalIds: jsonb("external_ids").default({}).$type<Record<string, string>>(),
+    externalIds: jsonb("external_ids")
+      .default({})
+      .$type<Record<string, string>>(),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("cre_leases_tenant_id_idx").on(t.tenantId),
@@ -133,10 +149,16 @@ export const creTenants = pgTable(
     contactEmail: varchar("contact_email", { length: 255 }),
     contactPhone: varchar("contact_phone", { length: 20 }),
     address: text("address"),
-    externalIds: jsonb("external_ids").default({}).$type<Record<string, string>>(),
+    externalIds: jsonb("external_ids")
+      .default({})
+      .$type<Record<string, string>>(),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [index("cre_tenants_tenant_id_idx").on(t.tenantId)],
 );
@@ -157,7 +179,9 @@ export const creCriticalDates = pgTable(
     status: varchar("status", { length: 20 }).notNull().default("upcoming"),
     notifyDaysBefore: integer("notify_days_before").default(30),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("cre_critical_dates_tenant_id_idx").on(t.tenantId),
@@ -181,14 +205,21 @@ export const creDocuments = pgTable(
     fileSize: integer("file_size"),
     mimeType: varchar("mime_type", { length: 100 }),
     storagePath: text("storage_path").notNull(),
-    extractionStatus: varchar("extraction_status", { length: 30 }).default("pending"),
+    extractionStatus: varchar("extraction_status", { length: 30 }).default(
+      "pending",
+    ),
     extractedData: jsonb("extracted_data").$type<Record<string, unknown>>(),
-    confidenceScores: jsonb("confidence_scores").$type<Record<string, number>>(),
+    confidenceScores:
+      jsonb("confidence_scores").$type<Record<string, number>>(),
     ocrRequired: boolean("ocr_required").default(false),
     pageCount: integer("page_count"),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("cre_documents_tenant_id_idx").on(t.tenantId),
@@ -213,13 +244,20 @@ export const creOperatingStatements = pgTable(
     periodStart: date("period_start").notNull(),
     periodEnd: date("period_end").notNull(),
     grossRevenue: numeric("gross_revenue", { precision: 15, scale: 2 }),
-    effectiveGrossIncome: numeric("effective_gross_income", { precision: 15, scale: 2 }),
+    effectiveGrossIncome: numeric("effective_gross_income", {
+      precision: 15,
+      scale: 2,
+    }),
     totalExpenses: numeric("total_expenses", { precision: 15, scale: 2 }),
     noi: numeric("noi", { precision: 15, scale: 2 }),
     lineItems: jsonb("line_items").$type<Record<string, unknown>>(),
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("cre_operating_statements_tenant_id_idx").on(t.tenantId),

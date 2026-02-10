@@ -27,12 +27,11 @@ export function createMcpServer(
         try {
           const result = await tool.execute(args.input);
           return {
-            content: [
-              { type: "text" as const, text: JSON.stringify(result) },
-            ],
+            content: [{ type: "text" as const, text: JSON.stringify(result) }],
           };
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           return {
             content: [{ type: "text" as const, text: `Error: ${message}` }],
             isError: true,

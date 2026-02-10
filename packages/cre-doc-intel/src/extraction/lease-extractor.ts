@@ -1,20 +1,38 @@
 import { createLogger } from "@beacon-os/common";
 import type { ModelRouter } from "@beacon-os/model-router";
 import { LEASE_EXTRACTION_PROMPT } from "../nlp/prompt-templates.js";
-import { scoreExtraction, type ConfidenceReport } from "../nlp/confidence-scorer.js";
+import {
+  scoreExtraction,
+  type ConfidenceReport,
+} from "../nlp/confidence-scorer.js";
 
 const log = createLogger("cre-doc-intel:lease-extractor");
 
 const REQUIRED_LEASE_FIELDS = [
-  "landlord_name", "tenant_name", "property_address", "premises_sqft",
-  "lease_type", "commencement_date", "expiration_date", "lease_term_months",
-  "base_rent_monthly", "base_rent_annual", "rent_per_sqft",
-  "rent_escalation_type", "security_deposit", "cam_charges",
-  "renewal_options", "termination_options", "permitted_use",
+  "landlord_name",
+  "tenant_name",
+  "property_address",
+  "premises_sqft",
+  "lease_type",
+  "commencement_date",
+  "expiration_date",
+  "lease_term_months",
+  "base_rent_monthly",
+  "base_rent_annual",
+  "rent_per_sqft",
+  "rent_escalation_type",
+  "security_deposit",
+  "cam_charges",
+  "renewal_options",
+  "termination_options",
+  "permitted_use",
 ];
 
 export interface LeaseExtractionResult {
-  fields: Record<string, { value: unknown; confidence: number; page?: number; sourceText?: string }>;
+  fields: Record<
+    string,
+    { value: unknown; confidence: number; page?: number; sourceText?: string }
+  >;
   summary: string;
   warnings: string[];
   confidenceReport: ConfidenceReport;
@@ -35,7 +53,10 @@ export async function extractLease(
       model: "claude-sonnet-4-5-20250929",
       messages: [
         { role: "system", content: LEASE_EXTRACTION_PROMPT },
-        { role: "user", content: `Extract data from this lease document:\n\n${text}` },
+        {
+          role: "user",
+          content: `Extract data from this lease document:\n\n${text}`,
+        },
       ],
       maxTokens: 8192,
       temperature: 0.1,
@@ -44,13 +65,23 @@ export async function extractLease(
   );
 
   // Parse JSON response
-  let parsed: { fields: Record<string, unknown>; summary: string; warnings: string[] };
+  let parsed: {
+    fields: Record<string, unknown>;
+    summary: string;
+    warnings: string[];
+  };
   try {
     const jsonMatch = response.content.match(/\{[\s\S]*\}/);
-    parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { fields: {}, summary: "", warnings: [] };
+    parsed = jsonMatch
+      ? JSON.parse(jsonMatch[0])
+      : { fields: {}, summary: "", warnings: [] };
   } catch {
     log.warn("Failed to parse extraction response as JSON");
-    parsed = { fields: {}, summary: response.content, warnings: ["Failed to parse structured response"] };
+    parsed = {
+      fields: {},
+      summary: response.content,
+      warnings: ["Failed to parse structured response"],
+    };
   }
 
   // Build typed fields

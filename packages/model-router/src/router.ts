@@ -1,5 +1,9 @@
 import { createLogger } from "@beacon-os/common";
-import type { ModelRequest, ModelResponse, ModelStreamChunk } from "@beacon-os/common";
+import type {
+  ModelRequest,
+  ModelResponse,
+  ModelStreamChunk,
+} from "@beacon-os/common";
 import type { ModelProvider } from "./providers/base.js";
 import { ClaudeProvider } from "./providers/claude.js";
 import { OpenAIProvider } from "./providers/openai.js";

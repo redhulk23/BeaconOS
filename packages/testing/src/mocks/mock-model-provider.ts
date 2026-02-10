@@ -1,4 +1,8 @@
-import type { ModelRequest, ModelResponse, ModelStreamChunk } from "@beacon-os/common";
+import type {
+  ModelRequest,
+  ModelResponse,
+  ModelStreamChunk,
+} from "@beacon-os/common";
 
 export interface MockModelProviderConfig {
   responses?: ModelResponse[];

@@ -1,4 +1,9 @@
-import { createLogger, generateToolId, type ToolId, type TenantId } from "@beacon-os/common";
+import {
+  createLogger,
+  generateToolId,
+  type ToolId,
+  type TenantId,
+} from "@beacon-os/common";
 import { getDb, toolRegistrations } from "@beacon-os/db";
 import { eq, and } from "drizzle-orm";
 import { z, type ZodSchema } from "zod";
@@ -111,7 +116,9 @@ export class ToolRegistry {
           permissions: (row.permissions ?? []) as string[],
           timeoutMs: row.timeoutMs ?? 30_000,
           execute: async () => {
-            throw new Error(`Tool "${row.name}" loaded from DB but has no bound executor`);
+            throw new Error(
+              `Tool "${row.name}" loaded from DB but has no bound executor`,
+            );
           },
         });
       }

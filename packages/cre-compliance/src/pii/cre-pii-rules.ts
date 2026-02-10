@@ -24,25 +24,79 @@ const CRE_PII_PATTERNS: Array<{
   description: string;
 }> = [
   // Standard PII
-  { name: "ssn", pattern: /\b\d{3}-\d{2}-\d{4}\b/g, description: "Social Security Number" },
-  { name: "email", pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, description: "Email address" },
-  { name: "phone", pattern: /\b(?:\+1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g, description: "Phone number" },
-  { name: "credit_card", pattern: /\b(?:4\d{3}|5[1-5]\d{2}|3[47]\d{2}|6(?:011|5\d{2}))[- ]?\d{4}[- ]?\d{4}[- ]?\d{3,4}\b/g, description: "Credit card number" },
+  {
+    name: "ssn",
+    pattern: /\b\d{3}-\d{2}-\d{4}\b/g,
+    description: "Social Security Number",
+  },
+  {
+    name: "email",
+    pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+    description: "Email address",
+  },
+  {
+    name: "phone",
+    pattern: /\b(?:\+1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
+    description: "Phone number",
+  },
+  {
+    name: "credit_card",
+    pattern:
+      /\b(?:4\d{3}|5[1-5]\d{2}|3[47]\d{2}|6(?:011|5\d{2}))[- ]?\d{4}[- ]?\d{4}[- ]?\d{3,4}\b/g,
+    description: "Credit card number",
+  },
 
   // CRE-specific financial PII
-  { name: "bank_account", pattern: /\b\d{8,17}\b(?=\s*(?:account|acct|routing))/gi, description: "Bank account number" },
-  { name: "routing_number", pattern: /\b(?:routing|aba|transit)[\s#:]*\d{9}\b/gi, description: "Bank routing number" },
-  { name: "ein", pattern: /\b\d{2}-\d{7}\b/g, description: "Employer Identification Number (EIN)" },
-  { name: "tax_id", pattern: /\b(?:tax\s*id|tin)[\s#:]*\d{2}-?\d{7}\b/gi, description: "Tax Identification Number" },
+  {
+    name: "bank_account",
+    pattern: /\b\d{8,17}\b(?=\s*(?:account|acct|routing))/gi,
+    description: "Bank account number",
+  },
+  {
+    name: "routing_number",
+    pattern: /\b(?:routing|aba|transit)[\s#:]*\d{9}\b/gi,
+    description: "Bank routing number",
+  },
+  {
+    name: "ein",
+    pattern: /\b\d{2}-\d{7}\b/g,
+    description: "Employer Identification Number (EIN)",
+  },
+  {
+    name: "tax_id",
+    pattern: /\b(?:tax\s*id|tin)[\s#:]*\d{2}-?\d{7}\b/gi,
+    description: "Tax Identification Number",
+  },
 
   // CRE-specific tenant PII
-  { name: "drivers_license", pattern: /\b(?:DL|driver'?s?\s*lic(?:ense)?)[\s#:]*[A-Z0-9]{5,15}\b/gi, description: "Driver's license number" },
-  { name: "passport", pattern: /\b(?:passport)[\s#:]*[A-Z0-9]{6,12}\b/gi, description: "Passport number" },
-  { name: "dob", pattern: /\b(?:DOB|date\s*of\s*birth|born)[\s:]*\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b/gi, description: "Date of birth" },
+  {
+    name: "drivers_license",
+    pattern: /\b(?:DL|driver'?s?\s*lic(?:ense)?)[\s#:]*[A-Z0-9]{5,15}\b/gi,
+    description: "Driver's license number",
+  },
+  {
+    name: "passport",
+    pattern: /\b(?:passport)[\s#:]*[A-Z0-9]{6,12}\b/gi,
+    description: "Passport number",
+  },
+  {
+    name: "dob",
+    pattern:
+      /\b(?:DOB|date\s*of\s*birth|born)[\s:]*\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b/gi,
+    description: "Date of birth",
+  },
 
   // Financial identifiers
-  { name: "wire_instructions", pattern: /\b(?:wire|swift|iban)[\s:]*[A-Z]{4}[A-Z0-9]{2,}\b/gi, description: "Wire transfer / SWIFT / IBAN code" },
-  { name: "net_worth", pattern: /\b(?:net\s*worth|annual\s*income|salary)[\s:$]*[\d,.]+/gi, description: "Personal financial information" },
+  {
+    name: "wire_instructions",
+    pattern: /\b(?:wire|swift|iban)[\s:]*[A-Z]{4}[A-Z0-9]{2,}\b/gi,
+    description: "Wire transfer / SWIFT / IBAN code",
+  },
+  {
+    name: "net_worth",
+    pattern: /\b(?:net\s*worth|annual\s*income|salary)[\s:$]*[\d,.]+/gi,
+    description: "Personal financial information",
+  },
 ];
 
 /**
@@ -80,7 +134,10 @@ export function detectCrePii(text: string): PiiScanResult {
   const hasPii = detections.length > 0;
 
   if (hasPii) {
-    log.warn({ piiCount: detections.length, types: [...piiTypes] }, "CRE PII detected");
+    log.warn(
+      { piiCount: detections.length, types: [...piiTypes] },
+      "CRE PII detected",
+    );
   }
 
   return {
@@ -94,14 +151,20 @@ export function detectCrePii(text: string): PiiScanResult {
 /**
  * Redact CRE-specific PII from text, replacing with type markers.
  */
-export function redactCrePii(text: string): { redacted: string; redactionCount: number } {
+export function redactCrePii(text: string): {
+  redacted: string;
+  redactionCount: number;
+} {
   let redacted = text;
   let count = 0;
 
   for (const rule of CRE_PII_PATTERNS) {
     rule.pattern.lastIndex = 0;
     const before = redacted;
-    redacted = redacted.replace(rule.pattern, `[REDACTED:${rule.name.toUpperCase()}]`);
+    redacted = redacted.replace(
+      rule.pattern,
+      `[REDACTED:${rule.name.toUpperCase()}]`,
+    );
     if (redacted !== before) {
       const matches = before.match(rule.pattern);
       count += matches?.length ?? 0;

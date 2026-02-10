@@ -12,11 +12,16 @@ export class MemoryManager {
 
   // --- Tier 1: Working Memory (in-process) ---
 
-  async getWorkingMemory(agentId: string): Promise<Record<string, unknown> | null> {
+  async getWorkingMemory(
+    agentId: string,
+  ): Promise<Record<string, unknown> | null> {
     return this.workingMemory.get(agentId) ?? null;
   }
 
-  async setWorkingMemory(agentId: string, data: Record<string, unknown>): Promise<void> {
+  async setWorkingMemory(
+    agentId: string,
+    data: Record<string, unknown>,
+  ): Promise<void> {
     const existing = this.workingMemory.get(agentId) ?? {};
     this.workingMemory.set(agentId, { ...existing, ...data });
   }
@@ -64,7 +69,9 @@ export class MemoryManager {
     const result = await db
       .select()
       .from(memoryEntries)
-      .where(and(eq(memoryEntries.agentId, agentId), eq(memoryEntries.key, key)))
+      .where(
+        and(eq(memoryEntries.agentId, agentId), eq(memoryEntries.key, key)),
+      )
       .then((rows) => rows[0]);
 
     if (!result) return null;
@@ -91,13 +98,19 @@ export class MemoryManager {
     const existing = await db
       .select()
       .from(memoryEntries)
-      .where(and(eq(memoryEntries.agentId, agentId), eq(memoryEntries.key, key)))
+      .where(
+        and(eq(memoryEntries.agentId, agentId), eq(memoryEntries.key, key)),
+      )
       .then((rows) => rows[0]);
 
     if (existing) {
       await db
         .update(memoryEntries)
-        .set({ value: value as Record<string, unknown>, expiresAt, updatedAt: new Date() })
+        .set({
+          value: value as Record<string, unknown>,
+          expiresAt,
+          updatedAt: new Date(),
+        })
         .where(eq(memoryEntries.id, existing.id));
     } else {
       await db.insert(memoryEntries).values({
@@ -115,7 +128,9 @@ export class MemoryManager {
     const db = getDb();
     await db
       .delete(memoryEntries)
-      .where(and(eq(memoryEntries.agentId, agentId), eq(memoryEntries.key, key)));
+      .where(
+        and(eq(memoryEntries.agentId, agentId), eq(memoryEntries.key, key)),
+      );
   }
 
   // --- Unified interface ---

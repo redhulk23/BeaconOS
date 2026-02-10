@@ -21,7 +21,10 @@ export async function runCoordinator(
   ctx.state.currentStep = coordinatorStep.id;
   await saveCheckpoint(workflowRunId, ctx.state);
   const planResult = await executeStep(coordinatorStep, ctx);
-  ctx.state.stepResults[coordinatorStep.id] = { status: planResult.status, output: planResult.output };
+  ctx.state.stepResults[coordinatorStep.id] = {
+    status: planResult.status,
+    output: planResult.output,
+  };
 
   if (planResult.status === "failed") {
     ctx.state.status = "failed";
@@ -52,9 +55,13 @@ export async function runCoordinator(
   ctx.state.currentStep = synthesizerStep.id;
   await saveCheckpoint(workflowRunId, ctx.state);
   const synthResult = await executeStep(synthesizerStep, ctx);
-  ctx.state.stepResults[synthesizerStep.id] = { status: synthResult.status, output: synthResult.output };
+  ctx.state.stepResults[synthesizerStep.id] = {
+    status: synthResult.status,
+    output: synthResult.output,
+  };
 
-  ctx.state.status = synthResult.status === "completed" ? "completed" : "failed";
+  ctx.state.status =
+    synthResult.status === "completed" ? "completed" : "failed";
   ctx.state.completedAt = new Date();
   ctx.state.currentStep = null;
   await saveCheckpoint(workflowRunId, ctx.state);

@@ -47,7 +47,9 @@ export interface ValidatedApiKey {
   permissions: string[];
 }
 
-export async function validateApiKey(key: string): Promise<ValidatedApiKey | null> {
+export async function validateApiKey(
+  key: string,
+): Promise<ValidatedApiKey | null> {
   const db = getDb();
   const prefix = key.slice(0, KEY_PREFIX_LENGTH);
 
@@ -82,7 +84,10 @@ export async function validateApiKey(key: string): Promise<ValidatedApiKey | nul
   return null;
 }
 
-export async function revokeApiKey(id: string, tenantId: string): Promise<boolean> {
+export async function revokeApiKey(
+  id: string,
+  tenantId: string,
+): Promise<boolean> {
   const db = getDb();
   const result = await db
     .update(apiKeys)

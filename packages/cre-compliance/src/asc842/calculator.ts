@@ -49,9 +49,8 @@ export function calculateAsc842(input: Asc842Input): Asc842Result {
   const pmt = input.monthlyPayment;
 
   // Calculate present value of lease payments (lease liability)
-  const pvFactor = monthlyRate > 0
-    ? (1 - Math.pow(1 + monthlyRate, -n)) / monthlyRate
-    : n;
+  const pvFactor =
+    monthlyRate > 0 ? (1 - Math.pow(1 + monthlyRate, -n)) / monthlyRate : n;
   const leaseLiability = pmt * pvFactor;
 
   // ROU asset = lease liability + initial direct costs + prepaid rent - lease incentives
@@ -111,7 +110,10 @@ export function calculateAsc842(input: Asc842Input): Asc842Result {
     }
   }
 
-  const totalCost = schedule.reduce((sum, entry) => sum + entry.totalExpense, 0);
+  const totalCost = schedule.reduce(
+    (sum, entry) => sum + entry.totalExpense,
+    0,
+  );
 
   log.info(
     {

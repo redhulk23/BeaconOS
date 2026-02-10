@@ -51,7 +51,11 @@ export class ToolExecutor {
         actorType: "agent",
         resourceType: "tool",
         resourceId: tool.id,
-        metadata: { toolName, denied: true, reason: "insufficient permissions" },
+        metadata: {
+          toolName,
+          denied: true,
+          reason: "insufficient permissions",
+        },
       });
 
       return {
@@ -133,10 +137,19 @@ export class ToolExecutor {
         actorType: "agent",
         resourceType: "tool",
         resourceId: tool.id,
-        metadata: { toolName, runId: context.runId, durationMs, success: false, error: message },
+        metadata: {
+          toolName,
+          runId: context.runId,
+          durationMs,
+          success: false,
+          error: message,
+        },
       });
 
-      log.error({ toolName, durationMs, error: message }, "Tool execution failed");
+      log.error(
+        { toolName, durationMs, error: message },
+        "Tool execution failed",
+      );
 
       return {
         success: false,
@@ -155,7 +168,11 @@ async function executeWithTimeout<T>(
   return Promise.race([
     fn(),
     new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`Tool execution timed out after ${timeoutMs}ms`)), timeoutMs),
+      setTimeout(
+        () =>
+          reject(new Error(`Tool execution timed out after ${timeoutMs}ms`)),
+        timeoutMs,
+      ),
     ),
   ]);
 }

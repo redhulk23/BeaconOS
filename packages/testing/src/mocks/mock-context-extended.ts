@@ -1,6 +1,9 @@
 import type { AgentContext } from "@beacon-os/sdk";
 import { createMockContext } from "@beacon-os/sdk";
-import { MockModelProvider, type MockModelProviderConfig } from "./mock-model-provider.js";
+import {
+  MockModelProvider,
+  type MockModelProviderConfig,
+} from "./mock-model-provider.js";
 
 export interface ExtendedMockContextOptions {
   agentId?: string;
@@ -16,9 +19,12 @@ export interface ExtendedMockContext {
   memorySets: Array<{ key: string; value: unknown }>;
 }
 
-export function createExtendedMockContext(options: ExtendedMockContextOptions = {}): ExtendedMockContext {
+export function createExtendedMockContext(
+  options: ExtendedMockContextOptions = {},
+): ExtendedMockContext {
   const modelProvider = new MockModelProvider(options.modelConfig);
-  const toolCalls: Array<{ name: string; input: unknown; output: unknown }> = [];
+  const toolCalls: Array<{ name: string; input: unknown; output: unknown }> =
+    [];
   const memorySets: Array<{ key: string; value: unknown }> = [];
   const memoryStore = new Map<string, unknown>();
 
@@ -32,10 +38,17 @@ export function createExtendedMockContext(options: ExtendedMockContextOptions = 
     const request = {
       provider: "custom" as const,
       model: "mock-model",
-      messages: messages.map((m) => ({ role: m.role as "system" | "user" | "assistant" | "tool_result", content: m.content })),
+      messages: messages.map((m) => ({
+        role: m.role as "system" | "user" | "assistant" | "tool_result",
+        content: m.content,
+      })),
     };
     const response = await modelProvider.complete(request);
-    return { content: response.content, usage: response.usage, finishReason: response.finishReason ?? "end_turn" };
+    return {
+      content: response.content,
+      usage: response.usage,
+      finishReason: response.finishReason ?? "end_turn",
+    };
   };
 
   // Wrap memory to record sets

@@ -4,7 +4,8 @@ export const MARKET_ANALYSIS_MANIFEST = {
   metadata: {
     name: "market-analysis",
     version: "0.1.0",
-    description: "Performs market analysis including comparable research, submarket fundamentals, and market study generation",
+    description:
+      "Performs market analysis including comparable research, submarket fundamentals, and market study generation",
     tags: ["cre", "market", "comps", "analysis"],
   },
   spec: {
@@ -32,10 +33,7 @@ export const MARKET_ANALYSIS_MANIFEST = {
       maxTokensPerRun: 350_000,
       timeoutMs: 900_000,
     },
-    permissions: [
-      "agents:run",
-      "tools:execute",
-    ],
+    permissions: ["agents:run", "tools:execute"],
     guardrails: {
       piiRedaction: false,
       fairHousing: false,
@@ -48,7 +46,8 @@ export const MARKET_ANALYSIS_MANIFEST = {
 export const MARKET_ANALYSIS_WORKFLOW = {
   name: "market-analysis-workflow",
   version: "0.1.0",
-  description: "Fan-out/gather workflow for comprehensive market analysis across data sources",
+  description:
+    "Fan-out/gather workflow for comprehensive market analysis across data sources",
   pattern: "fan_out_gather",
   steps: [
     {

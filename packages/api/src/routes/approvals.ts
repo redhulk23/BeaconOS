@@ -40,28 +40,32 @@ approvals.get("/", requirePermission(Permission.APPROVALS_READ), async (c) => {
 });
 
 // GET /api/v1/approval-requests/:id — Get approval request details
-approvals.get("/:id", requirePermission(Permission.APPROVALS_READ), async (c) => {
-  const tenantId = c.get("tenantId");
-  const id = c.req.param("id");
-  const db = getDb();
+approvals.get(
+  "/:id",
+  requirePermission(Permission.APPROVALS_READ),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const id = c.req.param("id");
+    const db = getDb();
 
-  const request = await db
-    .select()
-    .from(approvalRequests)
-    .where(
-      and(
-        eq(approvalRequests.id, id),
-        eq(approvalRequests.tenantId, tenantId),
-      ),
-    )
-    .then((rows) => rows[0]);
+    const request = await db
+      .select()
+      .from(approvalRequests)
+      .where(
+        and(
+          eq(approvalRequests.id, id),
+          eq(approvalRequests.tenantId, tenantId),
+        ),
+      )
+      .then((rows) => rows[0]);
 
-  if (!request) {
-    throw new NotFoundError("ApprovalRequest", id);
-  }
+    if (!request) {
+      throw new NotFoundError("ApprovalRequest", id);
+    }
 
-  return c.json({ data: request });
-});
+    return c.json({ data: request });
+  },
+);
 
 // POST /api/v1/approval-requests/:id/decide — Submit approval decision
 approvals.post(

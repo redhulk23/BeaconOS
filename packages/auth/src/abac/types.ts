@@ -1,4 +1,10 @@
-export type ComparisonOperator = "eq" | "in" | "not_in" | "gt" | "lt" | "contains";
+export type ComparisonOperator =
+  | "eq"
+  | "in"
+  | "not_in"
+  | "gt"
+  | "lt"
+  | "contains";
 
 export interface AttributeMatcher {
   field: string;
@@ -6,7 +12,11 @@ export interface AttributeMatcher {
   value: unknown;
 }
 
-export type PolicyConditionType = "time_range" | "ip_range" | "environment" | "custom";
+export type PolicyConditionType =
+  | "time_range"
+  | "ip_range"
+  | "environment"
+  | "custom";
 
 export interface PolicyCondition {
   type: PolicyConditionType;

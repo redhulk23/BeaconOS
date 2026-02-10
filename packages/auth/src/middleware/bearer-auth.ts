@@ -57,7 +57,9 @@ export function authMiddleware(): MiddlewareHandler {
         };
       }
     } else {
-      throw new AuthenticationError("Invalid Authorization format. Use: Bearer <token>");
+      throw new AuthenticationError(
+        "Invalid Authorization format. Use: Bearer <token>",
+      );
     }
 
     c.set("user", user);

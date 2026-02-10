@@ -43,7 +43,10 @@ export async function extractT12(
       model: "claude-sonnet-4-5-20250929",
       messages: [
         { role: "system", content: T12_EXTRACTION_PROMPT },
-        { role: "user", content: `Extract T-12 operating statement data from this document:\n\n${text}` },
+        {
+          role: "user",
+          content: `Extract T-12 operating statement data from this document:\n\n${text}`,
+        },
       ],
       maxTokens: 8192,
       temperature: 0.1,
@@ -85,7 +88,8 @@ export async function extractT12(
       noiPerSqft: metrics.noiPerSqft as number | undefined,
       noiPerUnit: metrics.noiPerUnit as number | undefined,
     },
-    propertyInfo: (parsed.propertyInfo as { name?: string; address?: string }) ?? {},
+    propertyInfo:
+      (parsed.propertyInfo as { name?: string; address?: string }) ?? {},
     confidence: Number(parsed.confidence ?? 0.5),
     rawResponse: response.content,
   };

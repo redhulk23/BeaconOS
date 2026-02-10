@@ -1,8 +1,19 @@
 import type { AgentContext } from "@beacon-os/sdk";
-import { classifyLease, calculateAsc842, type ClassificationInput } from "@beacon-os/cre-compliance";
-import { LEASE_ABSTRACTION_SYSTEM_PROMPT, CLASSIFY_LEASE_PROMPT, WRITE_TO_SYSTEM_PROMPT } from "./prompts.js";
+import {
+  classifyLease,
+  calculateAsc842,
+  type ClassificationInput,
+} from "@beacon-os/cre-compliance";
+import {
+  LEASE_ABSTRACTION_SYSTEM_PROMPT,
+  CLASSIFY_LEASE_PROMPT,
+  WRITE_TO_SYSTEM_PROMPT,
+} from "./prompts.js";
 
-export async function leaseAbstractionHandler(ctx: AgentContext, input: Record<string, unknown>): Promise<unknown> {
+export async function leaseAbstractionHandler(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+): Promise<unknown> {
   const task = (input.task as string) ?? "extract";
 
   switch (task) {
@@ -17,7 +28,10 @@ export async function leaseAbstractionHandler(ctx: AgentContext, input: Record<s
   }
 }
 
-async function handleExtract(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleExtract(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Starting lease extraction");
 
   const documentText = input.documentText as string | undefined;
@@ -27,7 +41,10 @@ async function handleExtract(ctx: AgentContext, input: Record<string, unknown>) 
 
   const response = await ctx.model.complete([
     { role: "system", content: LEASE_ABSTRACTION_SYSTEM_PROMPT },
-    { role: "user", content: `Extract all lease data points from the following document:\n\n${documentText}` },
+    {
+      role: "user",
+      content: `Extract all lease data points from the following document:\n\n${documentText}`,
+    },
   ]);
 
   const extraction = response.content;
@@ -38,22 +55,30 @@ async function handleExtract(ctx: AgentContext, input: Record<string, unknown>) 
   return { extraction, status: "extracted" };
 }
 
-async function handleClassify(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleClassify(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Starting ASC 842 classification");
 
-  const extraction = input.extraction ?? await ctx.memory.get("current_extraction");
+  const extraction =
+    input.extraction ?? (await ctx.memory.get("current_extraction"));
   if (!extraction) {
     throw new Error("No extraction data available for classification");
   }
 
   const response = await ctx.model.complete([
     { role: "system", content: LEASE_ABSTRACTION_SYSTEM_PROMPT },
-    { role: "user", content: `${CLASSIFY_LEASE_PROMPT}\n\nLease data:\n${JSON.stringify(extraction, null, 2)}` },
+    {
+      role: "user",
+      content: `${CLASSIFY_LEASE_PROMPT}\n\nLease data:\n${JSON.stringify(extraction, null, 2)}`,
+    },
   ]);
 
   const classificationInput: ClassificationInput = {
     transfersOwnership: (input.transfersOwnership as boolean) ?? false,
-    hasBargainPurchaseOption: (input.hasBargainPurchaseOption as boolean) ?? false,
+    hasBargainPurchaseOption:
+      (input.hasBargainPurchaseOption as boolean) ?? false,
     leaseTermMonths: (input.leaseTermMonths as number) ?? 60,
     economicLifeMonths: (input.economicLifeMonths as number) ?? 480,
     pvOfPayments: (input.pvOfPayments as number) ?? 0,
@@ -81,7 +106,10 @@ async function handleClassify(ctx: AgentContext, input: Record<string, unknown>)
   };
 
   await ctx.memory.set("classification_result", result);
-  ctx.log.info({ classification: ruleBasedResult.classification }, "ASC 842 classification complete");
+  ctx.log.info(
+    { classification: ruleBasedResult.classification },
+    "ASC 842 classification complete",
+  );
 
   return result;
 }
@@ -89,7 +117,8 @@ async function handleClassify(ctx: AgentContext, input: Record<string, unknown>)
 async function handleWrite(ctx: AgentContext, input: Record<string, unknown>) {
   ctx.log.info("Writing to property management system");
 
-  const extraction = input.extraction ?? await ctx.memory.get("current_extraction");
+  const extraction =
+    input.extraction ?? (await ctx.memory.get("current_extraction"));
   const targetSystem = (input.targetSystem as string) ?? "yardi";
 
   const response = await ctx.model.complete([

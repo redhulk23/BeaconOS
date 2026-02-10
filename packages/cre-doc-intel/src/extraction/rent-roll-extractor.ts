@@ -45,7 +45,10 @@ export async function extractRentRoll(
       model: "claude-sonnet-4-5-20250929",
       messages: [
         { role: "system", content: RENT_ROLL_EXTRACTION_PROMPT },
-        { role: "user", content: `Extract rent roll data from this document:\n\n${text}` },
+        {
+          role: "user",
+          content: `Extract rent roll data from this document:\n\n${text}`,
+        },
       ],
       maxTokens: 8192,
       temperature: 0.1,

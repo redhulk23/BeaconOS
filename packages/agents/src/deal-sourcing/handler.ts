@@ -1,8 +1,20 @@
 import type { AgentContext } from "@beacon-os/sdk";
-import { screenEntity, scanForFairHousing, type ScreeningRequest } from "@beacon-os/cre-compliance";
-import { DEAL_SOURCING_SYSTEM_PROMPT, SEARCH_MARKET_PROMPT, SCREEN_DEAL_PROMPT, CONSOLIDATE_PROMPT } from "./prompts.js";
+import {
+  screenEntity,
+  scanForFairHousing,
+  type ScreeningRequest,
+} from "@beacon-os/cre-compliance";
+import {
+  DEAL_SOURCING_SYSTEM_PROMPT,
+  SEARCH_MARKET_PROMPT,
+  SCREEN_DEAL_PROMPT,
+  CONSOLIDATE_PROMPT,
+} from "./prompts.js";
 
-export async function dealSourcingHandler(ctx: AgentContext, input: Record<string, unknown>): Promise<unknown> {
+export async function dealSourcingHandler(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+): Promise<unknown> {
   const task = (input.task as string) ?? "search_market";
 
   switch (task) {
@@ -17,7 +29,10 @@ export async function dealSourcingHandler(ctx: AgentContext, input: Record<strin
   }
 }
 
-async function handleSearchMarket(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleSearchMarket(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   const market = (input.market as string) ?? "Austin";
   const propertyType = (input.propertyType as string) ?? "office";
   const criteria = (input.criteria as Record<string, unknown>) ?? {};
@@ -59,12 +74,18 @@ async function handleSearchMarket(ctx: AgentContext, input: Record<string, unkno
   };
 
   await ctx.memory.set(`market_results_${market.toLowerCase()}`, results);
-  ctx.log.info({ market, resultCount: (properties as unknown[])?.length ?? 0 }, "Market search complete");
+  ctx.log.info(
+    { market, resultCount: (properties as unknown[])?.length ?? 0 },
+    "Market search complete",
+  );
 
   return results;
 }
 
-async function handleScreenDeal(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleScreenDeal(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   const propertyId = input.propertyId as string;
   ctx.log.info({ propertyId }, "Screening deal");
 
@@ -79,7 +100,9 @@ async function handleScreenDeal(ctx: AgentContext, input: Record<string, unknown
     }),
   );
 
-  const hasComplianceConcerns = screeningResults.some((r) => r.status !== "clear");
+  const hasComplianceConcerns = screeningResults.some(
+    (r) => r.status !== "clear",
+  );
 
   const response = await ctx.model.complete([
     { role: "system", content: DEAL_SOURCING_SYSTEM_PROMPT },
@@ -105,14 +128,19 @@ async function handleScreenDeal(ctx: AgentContext, input: Record<string, unknown
   };
 }
 
-async function handleConsolidate(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleConsolidate(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Consolidating deal search results");
 
   const markets = (input.markets as string[]) ?? ["austin", "dallas"];
   const allResults: unknown[] = [];
 
   for (const market of markets) {
-    const marketResults = input[`${market}Results`] ?? await ctx.memory.get(`market_results_${market}`);
+    const marketResults =
+      input[`${market}Results`] ??
+      (await ctx.memory.get(`market_results_${market}`));
     if (marketResults) allResults.push(marketResults);
   }
 

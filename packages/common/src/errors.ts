@@ -54,7 +54,9 @@ export class RateLimitError extends BeaconError {
 
 export class ResourceExhaustedError extends BeaconError {
   constructor(resource: string) {
-    super(`Resource exhausted: ${resource}`, "RESOURCE_EXHAUSTED", 429, { resource });
+    super(`Resource exhausted: ${resource}`, "RESOURCE_EXHAUSTED", 429, {
+      resource,
+    });
     this.name = "ResourceExhaustedError";
   }
 }

@@ -45,9 +45,11 @@ export interface ClassificationResult {
 }
 
 const MAJOR_PART_THRESHOLD = 0.75;
-const SUBSTANTIALLY_ALL_THRESHOLD = 0.90;
+const SUBSTANTIALLY_ALL_THRESHOLD = 0.9;
 
-export function classifyLease(input: ClassificationInput): ClassificationResult {
+export function classifyLease(
+  input: ClassificationInput,
+): ClassificationResult {
   const reasons: string[] = [];
   const criteria = {
     ownershipTransfer: input.transfersOwnership,
@@ -62,7 +64,9 @@ export function classifyLease(input: ClassificationInput): ClassificationResult 
   }
 
   if (input.hasBargainPurchaseOption) {
-    reasons.push("Lessee has a bargain purchase option reasonably certain to be exercised");
+    reasons.push(
+      "Lessee has a bargain purchase option reasonably certain to be exercised",
+    );
   }
 
   if (input.economicLifeMonths > 0) {
@@ -93,10 +97,15 @@ export function classifyLease(input: ClassificationInput): ClassificationResult 
   const classification = isFinancing ? "financing" : "operating";
 
   if (!isFinancing) {
-    reasons.push("No financing lease criteria met — classified as operating lease");
+    reasons.push(
+      "No financing lease criteria met — classified as operating lease",
+    );
   }
 
-  log.info({ classification, criteriaCount: reasons.length }, "Lease classified under ASC 842");
+  log.info(
+    { classification, criteriaCount: reasons.length },
+    "Lease classified under ASC 842",
+  );
 
   return { classification, reasons, criteria };
 }

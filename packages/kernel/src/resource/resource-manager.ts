@@ -1,4 +1,8 @@
-import { createLogger, RateLimitError, ResourceExhaustedError } from "@beacon-os/common";
+import {
+  createLogger,
+  RateLimitError,
+  ResourceExhaustedError,
+} from "@beacon-os/common";
 import { getRedis } from "@beacon-os/db";
 import { TokenTracker } from "@beacon-os/model-router";
 
@@ -26,7 +30,10 @@ export class ResourceManager {
     this.tokenTracker = tokenTracker ?? new TokenTracker();
   }
 
-  async checkTokenBudget(tenantId: string, requiredTokens: number): Promise<boolean> {
+  async checkTokenBudget(
+    tenantId: string,
+    requiredTokens: number,
+  ): Promise<boolean> {
     const usage = await this.tokenTracker.getUsage(tenantId, 1);
     const remaining = this.limits.maxTokensPerHour - usage.tokens;
 
@@ -65,11 +72,16 @@ export class ResourceManager {
   async enforceRateLimit(tenantId: string): Promise<void> {
     const allowed = await this.checkRateLimit(tenantId);
     if (!allowed) {
-      throw new RateLimitError(`Rate limit exceeded: max ${this.limits.maxRunsPerHour} runs/hour`);
+      throw new RateLimitError(
+        `Rate limit exceeded: max ${this.limits.maxRunsPerHour} runs/hour`,
+      );
     }
   }
 
-  async enforceTokenBudget(tenantId: string, requiredTokens: number): Promise<void> {
+  async enforceTokenBudget(
+    tenantId: string,
+    requiredTokens: number,
+  ): Promise<void> {
     const allowed = await this.checkTokenBudget(tenantId, requiredTokens);
     if (!allowed) {
       throw new ResourceExhaustedError("token budget");

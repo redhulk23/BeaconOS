@@ -50,7 +50,8 @@ export async function runIterativeRefinement(
     // Check quality score
     const score =
       typeof evalResult.output === "object" && evalResult.output !== null
-        ? ((evalResult.output as Record<string, unknown>).score as number) ?? 0
+        ? (((evalResult.output as Record<string, unknown>).score as number) ??
+          0)
         : 0;
 
     ctx.state.data._qualityScore = score;
@@ -62,7 +63,9 @@ export async function runIterativeRefinement(
 
     // Add feedback to data for next iteration
     if (typeof evalResult.output === "object" && evalResult.output !== null) {
-      ctx.state.data._feedback = (evalResult.output as Record<string, unknown>).feedback;
+      ctx.state.data._feedback = (
+        evalResult.output as Record<string, unknown>
+      ).feedback;
     }
   }
 

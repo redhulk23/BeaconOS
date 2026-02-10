@@ -77,11 +77,16 @@ export async function submitDecision(
       decidedBy: decision.decidedBy,
       decidedAt: new Date(),
     })
-    .where(and(eq(approvalRequests.id, id), eq(approvalRequests.status, "pending")));
+    .where(
+      and(eq(approvalRequests.id, id), eq(approvalRequests.status, "pending")),
+    );
 
   const updated = (result.rowCount ?? 0) > 0;
   if (updated) {
-    log.info({ id, approved: decision.approved }, "Approval decision submitted");
+    log.info(
+      { id, approved: decision.approved },
+      "Approval decision submitted",
+    );
   }
   return updated;
 }

@@ -1,7 +1,12 @@
 import { parse as parseYaml } from "yaml";
 import { ValidationError } from "@beacon-os/common";
 
-export type StepType = "agent" | "tool" | "approval" | "condition" | "transform";
+export type StepType =
+  | "agent"
+  | "tool"
+  | "approval"
+  | "condition"
+  | "transform";
 
 export interface WorkflowStep {
   id: string;
@@ -38,7 +43,9 @@ export function parseWorkflow(yamlContent: string): WorkflowDefinitionParsed {
   return parseWorkflowFromObject(raw);
 }
 
-export function parseWorkflowFromObject(obj: unknown): WorkflowDefinitionParsed {
+export function parseWorkflowFromObject(
+  obj: unknown,
+): WorkflowDefinitionParsed {
   if (!obj || typeof obj !== "object") {
     throw new ValidationError("Workflow must be an object");
   }

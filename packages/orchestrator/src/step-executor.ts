@@ -8,8 +8,14 @@ export interface StepExecutionContext {
   tenantId: string;
   workflowRunId: string;
   state: WorkflowState;
-  executeAgent: (agentId: string, input: Record<string, unknown>) => Promise<unknown>;
-  executeTool: (toolName: string, input: Record<string, unknown>) => Promise<unknown>;
+  executeAgent: (
+    agentId: string,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>;
+  executeTool: (
+    toolName: string,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>;
   requestApproval: (request: {
     title: string;
     description?: string;
@@ -102,7 +108,10 @@ export async function executeStep(
 
     // Apply output mapping
     if (step.outputMapping && typeof output === "object" && output !== null) {
-      const mapped = resolveOutputMapping(step.outputMapping, output as Record<string, unknown>);
+      const mapped = resolveOutputMapping(
+        step.outputMapping,
+        output as Record<string, unknown>,
+      );
       Object.assign(ctx.state.data, mapped);
     } else if (output !== undefined) {
       ctx.state.data[step.id] = output;
@@ -172,7 +181,10 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   return current;
 }
 
-function evaluateCondition(expression: string, data: Record<string, unknown>): boolean {
+function evaluateCondition(
+  expression: string,
+  data: Record<string, unknown>,
+): boolean {
   // Simple expression evaluator for conditions like "data.score > 0.8"
   // Supports: ==, !=, >, <, >=, <=, &&, ||, !
   try {
@@ -183,12 +195,18 @@ function evaluateCondition(expression: string, data: Record<string, unknown>): b
       const right = resolveValue(parts[2]!.trim(), data);
 
       switch (op) {
-        case "==": return left == right;
-        case "!=": return left != right;
-        case ">": return Number(left) > Number(right);
-        case "<": return Number(left) < Number(right);
-        case ">=": return Number(left) >= Number(right);
-        case "<=": return Number(left) <= Number(right);
+        case "==":
+          return left == right;
+        case "!=":
+          return left != right;
+        case ">":
+          return Number(left) > Number(right);
+        case "<":
+          return Number(left) < Number(right);
+        case ">=":
+          return Number(left) >= Number(right);
+        case "<=":
+          return Number(left) <= Number(right);
       }
     }
 
@@ -219,7 +237,7 @@ function applyTransform(
   const operation = config.operation as string;
   switch (operation) {
     case "merge":
-      return { ...data, ...(config.values as Record<string, unknown> ?? {}) };
+      return { ...data, ...((config.values as Record<string, unknown>) ?? {}) };
     case "pick": {
       const keys = config.keys as string[];
       const result: Record<string, unknown> = {};

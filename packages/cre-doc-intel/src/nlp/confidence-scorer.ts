@@ -28,7 +28,11 @@ export function scoreExtraction(
 
   for (const field of requiredFields) {
     const extracted = extractedFields[field];
-    if (!extracted || extracted.value === null || extracted.value === undefined) {
+    if (
+      !extracted ||
+      extracted.value === null ||
+      extracted.value === undefined
+    ) {
       fieldScores.push({ field, confidence: 0, source: "default" });
       missing++;
       continue;
@@ -50,8 +54,7 @@ export function scoreExtraction(
   }
 
   const scoredCount = requiredFields.length - missing;
-  const overallConfidence =
-    scoredCount > 0 ? totalConfidence / scoredCount : 0;
+  const overallConfidence = scoredCount > 0 ? totalConfidence / scoredCount : 0;
 
   return {
     overallConfidence,

@@ -21,16 +21,16 @@ Commercial real estate firms operate across 5-15+ disconnected platforms, spend 
 
 ## CRE Agent Archetypes
 
-| Agent | Phase | Description |
-|-------|-------|-------------|
-| Lease Abstraction | 1 | Extract 200+ data points from leases, ASC 842 classification, critical date monitoring |
-| Underwriting | 1 | T-12/rent roll extraction, pro forma modeling, scenario analysis, investment memos |
-| Deal Sourcing | 1 | Continuous market monitoring, investment criteria filtering, deal scoring |
-| Tenant Communication | 2 | 24/7 multi-channel response, renewal outreach, delinquency workflows |
-| Market Analysis | 2 | Comparable identification, submarket analysis, automated market studies |
-| Due Diligence | 2 | Document classification, risk flagging, estoppel comparison, checklist management |
-| Financial Reporting | 3 | Investor reports, waterfall calculations, REIT qualification monitoring |
-| Portfolio Optimization | 3 | Performance monitoring, hold/sell/refi analysis, scenario modeling |
+| Agent                  | Phase | Description                                                                            |
+| ---------------------- | ----- | -------------------------------------------------------------------------------------- |
+| Lease Abstraction      | 1     | Extract 200+ data points from leases, ASC 842 classification, critical date monitoring |
+| Underwriting           | 1     | T-12/rent roll extraction, pro forma modeling, scenario analysis, investment memos     |
+| Deal Sourcing          | 1     | Continuous market monitoring, investment criteria filtering, deal scoring              |
+| Tenant Communication   | 2     | 24/7 multi-channel response, renewal outreach, delinquency workflows                   |
+| Market Analysis        | 2     | Comparable identification, submarket analysis, automated market studies                |
+| Due Diligence          | 2     | Document classification, risk flagging, estoppel comparison, checklist management      |
+| Financial Reporting    | 3     | Investor reports, waterfall calculations, REIT qualification monitoring                |
+| Portfolio Optimization | 3     | Performance monitoring, hold/sell/refi analysis, scenario modeling                     |
 
 ## Technology
 

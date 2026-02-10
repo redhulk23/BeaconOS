@@ -9,8 +9,15 @@ import {
 import { getDb, workflowDefinitions, workflowRuns } from "@beacon-os/db";
 import { getAuditLogger } from "@beacon-os/audit";
 import { requirePermission, Permission } from "@beacon-os/auth";
-import { OrchestrationEngine, type OrchestrationDeps } from "@beacon-os/orchestrator";
-import { ProcessManager, MemoryManager, ResourceManager } from "@beacon-os/kernel";
+import {
+  OrchestrationEngine,
+  type OrchestrationDeps,
+} from "@beacon-os/orchestrator";
+import {
+  ProcessManager,
+  MemoryManager,
+  ResourceManager,
+} from "@beacon-os/kernel";
 import { ModelRouter } from "@beacon-os/model-router";
 
 const workflows = new Hono();
@@ -32,7 +39,13 @@ function getEngine(): OrchestrationEngine {
           agentId as never,
           "system" as never,
           input,
-          { model: "claude-sonnet-4-5-20250929", maxSteps: 50, maxTokensPerRun: 100_000, temperature: 0.7, timeoutMs: 300_000 },
+          {
+            model: "claude-sonnet-4-5-20250929",
+            maxSteps: 50,
+            maxTokensPerRun: 100_000,
+            temperature: 0.7,
+            timeoutMs: 300_000,
+          },
         );
         return { runId };
       },
@@ -62,52 +75,56 @@ const StartWorkflowRunSchema = z.object({
 });
 
 // POST /api/v1/workflows — Create workflow definition
-workflows.post("/", requirePermission(Permission.WORKFLOWS_CREATE), async (c) => {
-  const tenantId = c.get("tenantId");
-  const user = c.get("user");
-  const body = await c.req.json();
-  const parsed = CreateWorkflowSchema.safeParse(body);
+workflows.post(
+  "/",
+  requirePermission(Permission.WORKFLOWS_CREATE),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const user = c.get("user");
+    const body = await c.req.json();
+    const parsed = CreateWorkflowSchema.safeParse(body);
 
-  if (!parsed.success) {
-    throw new ValidationError("Invalid workflow definition", {
-      issues: parsed.error.issues,
+    if (!parsed.success) {
+      throw new ValidationError("Invalid workflow definition", {
+        issues: parsed.error.issues,
+      });
+    }
+
+    const db = getDb();
+    const id = generateWorkflowId();
+    const data = parsed.data;
+
+    await db.insert(workflowDefinitions).values({
+      id,
+      tenantId,
+      name: data.name,
+      version: data.version,
+      description: data.description,
+      definition: data.definition,
+      status: "active",
+      createdBy: user.id,
     });
-  }
 
-  const db = getDb();
-  const id = generateWorkflowId();
-  const data = parsed.data;
+    const audit = getAuditLogger();
+    await audit.log({
+      tenantId,
+      action: "agent.registered",
+      actorId: user.id,
+      actorType: "user",
+      resourceType: "workflow",
+      resourceId: id,
+      metadata: { name: data.name, version: data.version },
+    });
 
-  await db.insert(workflowDefinitions).values({
-    id,
-    tenantId,
-    name: data.name,
-    version: data.version,
-    description: data.description,
-    definition: data.definition,
-    status: "active",
-    createdBy: user.id,
-  });
+    const workflow = await db
+      .select()
+      .from(workflowDefinitions)
+      .where(eq(workflowDefinitions.id, id))
+      .then((rows) => rows[0]);
 
-  const audit = getAuditLogger();
-  await audit.log({
-    tenantId,
-    action: "agent.registered",
-    actorId: user.id,
-    actorType: "user",
-    resourceType: "workflow",
-    resourceId: id,
-    metadata: { name: data.name, version: data.version },
-  });
-
-  const workflow = await db
-    .select()
-    .from(workflowDefinitions)
-    .where(eq(workflowDefinitions.id, id))
-    .then((rows) => rows[0]);
-
-  return c.json({ data: workflow }, 201);
-});
+    return c.json({ data: workflow }, 201);
+  },
+);
 
 // GET /api/v1/workflows — List workflow definitions
 workflows.get("/", requirePermission(Permission.WORKFLOWS_READ), async (c) => {
@@ -130,28 +147,32 @@ workflows.get("/", requirePermission(Permission.WORKFLOWS_READ), async (c) => {
 });
 
 // GET /api/v1/workflows/:id — Get workflow definition
-workflows.get("/:id", requirePermission(Permission.WORKFLOWS_READ), async (c) => {
-  const tenantId = c.get("tenantId");
-  const id = c.req.param("id");
-  const db = getDb();
+workflows.get(
+  "/:id",
+  requirePermission(Permission.WORKFLOWS_READ),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const id = c.req.param("id");
+    const db = getDb();
 
-  const workflow = await db
-    .select()
-    .from(workflowDefinitions)
-    .where(
-      and(
-        eq(workflowDefinitions.id, id),
-        eq(workflowDefinitions.tenantId, tenantId),
-      ),
-    )
-    .then((rows) => rows[0]);
+    const workflow = await db
+      .select()
+      .from(workflowDefinitions)
+      .where(
+        and(
+          eq(workflowDefinitions.id, id),
+          eq(workflowDefinitions.tenantId, tenantId),
+        ),
+      )
+      .then((rows) => rows[0]);
 
-  if (!workflow) {
-    throw new NotFoundError("Workflow", id);
-  }
+    if (!workflow) {
+      throw new NotFoundError("Workflow", id);
+    }
 
-  return c.json({ data: workflow });
-});
+    return c.json({ data: workflow });
+  },
+);
 
 // POST /api/v1/workflows/:id/runs — Start a workflow run
 workflows.post(
@@ -225,9 +246,7 @@ workflows.get(
     const run = await db
       .select()
       .from(workflowRuns)
-      .where(
-        and(eq(workflowRuns.id, id), eq(workflowRuns.tenantId, tenantId)),
-      )
+      .where(and(eq(workflowRuns.id, id), eq(workflowRuns.tenantId, tenantId)))
       .then((rows) => rows[0]);
 
     if (!run) {

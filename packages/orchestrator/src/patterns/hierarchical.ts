@@ -21,7 +21,10 @@ export async function runHierarchical(
   ctx.state.currentStep = managerStep.id;
   await saveCheckpoint(workflowRunId, ctx.state);
   const managerResult = await executeStep(managerStep, ctx);
-  ctx.state.stepResults[managerStep.id] = { status: managerResult.status, output: managerResult.output };
+  ctx.state.stepResults[managerStep.id] = {
+    status: managerResult.status,
+    output: managerResult.output,
+  };
 
   if (managerResult.status === "failed") {
     ctx.state.status = "failed";
@@ -36,7 +39,10 @@ export async function runHierarchical(
     ctx.state.currentStep = step.id;
     await saveCheckpoint(workflowRunId, ctx.state);
     const result = await executeStep(step, ctx);
-    ctx.state.stepResults[step.id] = { status: result.status, output: result.output };
+    ctx.state.stepResults[step.id] = {
+      status: result.status,
+      output: result.output,
+    };
 
     if (result.status === "failed" && step.onError !== "skip") {
       ctx.state.status = "failed";
@@ -51,9 +57,13 @@ export async function runHierarchical(
   ctx.state.currentStep = reviewStep.id;
   await saveCheckpoint(workflowRunId, ctx.state);
   const reviewResult = await executeStep(reviewStep, ctx);
-  ctx.state.stepResults[reviewStep.id] = { status: reviewResult.status, output: reviewResult.output };
+  ctx.state.stepResults[reviewStep.id] = {
+    status: reviewResult.status,
+    output: reviewResult.output,
+  };
 
-  ctx.state.status = reviewResult.status === "completed" ? "completed" : "failed";
+  ctx.state.status =
+    reviewResult.status === "completed" ? "completed" : "failed";
   ctx.state.completedAt = new Date();
   ctx.state.currentStep = null;
   await saveCheckpoint(workflowRunId, ctx.state);

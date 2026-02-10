@@ -82,7 +82,9 @@ export class OpenAIProvider implements ModelProvider {
       params.tools = tools;
     }
 
-    const stream = await this.client.chat.completions.create(params) as unknown as AsyncIterable<{
+    const stream = (await this.client.chat.completions.create(
+      params,
+    )) as unknown as AsyncIterable<{
       choices: Array<{
         delta: {
           content?: string | null;
@@ -94,10 +96,17 @@ export class OpenAIProvider implements ModelProvider {
         };
         finish_reason?: string | null;
       }>;
-      usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+      usage?: {
+        prompt_tokens: number;
+        completion_tokens: number;
+        total_tokens: number;
+      };
     }>;
 
-    const toolCallAccumulators = new Map<number, { id: string; name: string; args: string }>();
+    const toolCallAccumulators = new Map<
+      number,
+      { id: string; name: string; args: string }
+    >();
 
     for await (const chunk of stream) {
       const choice = chunk.choices[0];
@@ -146,7 +155,10 @@ export class OpenAIProvider implements ModelProvider {
               },
             };
           } catch {
-            yield { type: "tool_call_end", toolCall: { id: acc.id, name: acc.name, input: {} } };
+            yield {
+              type: "tool_call_end",
+              toolCall: { id: acc.id, name: acc.name, input: {} },
+            };
           }
         }
         toolCallAccumulators.clear();
@@ -165,7 +177,9 @@ export class OpenAIProvider implements ModelProvider {
     }
   }
 
-  private transformMessages(messages: ModelMessage[]): Record<string, unknown>[] {
+  private transformMessages(
+    messages: ModelMessage[],
+  ): Record<string, unknown>[] {
     return messages.map((msg) => {
       if (msg.role === "tool_result") {
         return {

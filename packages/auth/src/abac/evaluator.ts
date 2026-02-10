@@ -1,4 +1,10 @@
-import type { AbacPolicy, AbacContext, AbacDecision, AttributeMatcher, PolicyCondition } from "./types.js";
+import type {
+  AbacPolicy,
+  AbacContext,
+  AbacDecision,
+  AttributeMatcher,
+  PolicyCondition,
+} from "./types.js";
 
 export class AbacEvaluator {
   evaluate(policies: AbacPolicy[], context: AbacContext): AbacDecision {
@@ -7,7 +13,11 @@ export class AbacEvaluator {
       .sort((a, b) => b.priority - a.priority);
 
     if (activePolicies.length === 0) {
-      return { result: "not_applicable", matchedPolicies: [], reason: "No active policies found" };
+      return {
+        result: "not_applicable",
+        matchedPolicies: [],
+        reason: "No active policies found",
+      };
     }
 
     const matchedPolicies: string[] = [];
@@ -32,22 +42,42 @@ export class AbacEvaluator {
     }
 
     if (hasAllow) {
-      return { result: "allow", matchedPolicies, reason: "Allowed by matching policies" };
+      return {
+        result: "allow",
+        matchedPolicies,
+        reason: "Allowed by matching policies",
+      };
     }
 
-    return { result: "not_applicable", matchedPolicies: [], reason: "No matching policies" };
+    return {
+      result: "not_applicable",
+      matchedPolicies: [],
+      reason: "No matching policies",
+    };
   }
 
   private matchesPolicy(policy: AbacPolicy, context: AbacContext): boolean {
-    const subjectMatch = this.matchesAttributes(policy.subjectAttributes, context.subject);
-    const resourceMatch = this.matchesAttributes(policy.resourceAttributes, context.resource);
-    const actionMatch = this.matchesAttributes(policy.actionAttributes, context.action);
+    const subjectMatch = this.matchesAttributes(
+      policy.subjectAttributes,
+      context.subject,
+    );
+    const resourceMatch = this.matchesAttributes(
+      policy.resourceAttributes,
+      context.resource,
+    );
+    const actionMatch = this.matchesAttributes(
+      policy.actionAttributes,
+      context.action,
+    );
     const conditionsMatch = this.evaluateConditions(policy.conditions, context);
 
     return subjectMatch && resourceMatch && actionMatch && conditionsMatch;
   }
 
-  private matchesAttributes(matchers: AttributeMatcher[], attributes: Record<string, unknown>): boolean {
+  private matchesAttributes(
+    matchers: AttributeMatcher[],
+    attributes: Record<string, unknown>,
+  ): boolean {
     if (matchers.length === 0) return true;
 
     return matchers.every((matcher) => {
@@ -60,18 +90,33 @@ export class AbacEvaluator {
         case "not_in":
           return Array.isArray(matcher.value) && !matcher.value.includes(value);
         case "gt":
-          return typeof value === "number" && typeof matcher.value === "number" && value > matcher.value;
+          return (
+            typeof value === "number" &&
+            typeof matcher.value === "number" &&
+            value > matcher.value
+          );
         case "lt":
-          return typeof value === "number" && typeof matcher.value === "number" && value < matcher.value;
+          return (
+            typeof value === "number" &&
+            typeof matcher.value === "number" &&
+            value < matcher.value
+          );
         case "contains":
-          return typeof value === "string" && typeof matcher.value === "string" && value.includes(matcher.value);
+          return (
+            typeof value === "string" &&
+            typeof matcher.value === "string" &&
+            value.includes(matcher.value)
+          );
         default:
           return false;
       }
     });
   }
 
-  private evaluateConditions(conditions: PolicyCondition[], context: AbacContext): boolean {
+  private evaluateConditions(
+    conditions: PolicyCondition[],
+    context: AbacContext,
+  ): boolean {
     if (conditions.length === 0) return true;
 
     return conditions.every((condition) => {
@@ -88,9 +133,13 @@ export class AbacEvaluator {
         }
         case "ip_range": {
           const clientIp = context.environment.clientIp as string | undefined;
-          const allowedRanges = condition.parameters.ranges as string[] | undefined;
+          const allowedRanges = condition.parameters.ranges as
+            | string[]
+            | undefined;
           if (clientIp && allowedRanges) {
-            return allowedRanges.some((range) => clientIp.startsWith(range.replace("*", "")));
+            return allowedRanges.some((range) =>
+              clientIp.startsWith(range.replace("*", "")),
+            );
           }
           return true;
         }

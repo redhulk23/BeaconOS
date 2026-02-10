@@ -6,5 +6,16 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: [/^@beacon-os\//, /^drizzle/, /^pg$/, /^ioredis$/, /^pino$/, /^jose$/, /^bcrypt$/, /^hono/, /^zod$/, /^ulid$/],
+  external: [
+    /^@beacon-os\//,
+    /^drizzle/,
+    /^pg$/,
+    /^ioredis$/,
+    /^pino$/,
+    /^jose$/,
+    /^bcrypt$/,
+    /^hono/,
+    /^zod$/,
+    /^ulid$/,
+  ],
 });

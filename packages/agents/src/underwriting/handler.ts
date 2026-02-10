@@ -1,7 +1,15 @@
 import type { AgentContext } from "@beacon-os/sdk";
-import { UNDERWRITING_SYSTEM_PROMPT, EXTRACT_FINANCIALS_PROMPT, GENERATE_PRO_FORMA_PROMPT, EVALUATE_UNDERWRITING_PROMPT } from "./prompts.js";
+import {
+  UNDERWRITING_SYSTEM_PROMPT,
+  EXTRACT_FINANCIALS_PROMPT,
+  GENERATE_PRO_FORMA_PROMPT,
+  EVALUATE_UNDERWRITING_PROMPT,
+} from "./prompts.js";
 
-export async function underwritingHandler(ctx: AgentContext, input: Record<string, unknown>): Promise<unknown> {
+export async function underwritingHandler(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+): Promise<unknown> {
   const task = (input.task as string) ?? "full_analysis";
 
   switch (task) {
@@ -18,7 +26,10 @@ export async function underwritingHandler(ctx: AgentContext, input: Record<strin
   }
 }
 
-async function handleExtractFinancials(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleExtractFinancials(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Extracting and analyzing financials");
 
   const propertyCode = input.propertyCode as string | undefined;
@@ -64,10 +75,14 @@ async function handleExtractFinancials(ctx: AgentContext, input: Record<string, 
   return analysis;
 }
 
-async function handleProForma(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleProForma(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Generating pro forma projections");
 
-  const financialAnalysis = input.financialAnalysis ?? await ctx.memory.get("financial_analysis");
+  const financialAnalysis =
+    input.financialAnalysis ?? (await ctx.memory.get("financial_analysis"));
 
   let comps: unknown = null;
   if (input.city) {
@@ -97,11 +112,15 @@ async function handleProForma(ctx: AgentContext, input: Record<string, unknown>)
   return proForma;
 }
 
-async function handleEvaluate(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleEvaluate(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Evaluating underwriting quality");
 
-  const analysis = input.analysis ?? await ctx.memory.get("financial_analysis");
-  const proForma = input.proForma ?? await ctx.memory.get("pro_forma");
+  const analysis =
+    input.analysis ?? (await ctx.memory.get("financial_analysis"));
+  const proForma = input.proForma ?? (await ctx.memory.get("pro_forma"));
 
   const response = await ctx.model.complete([
     { role: "system", content: UNDERWRITING_SYSTEM_PROMPT },
@@ -117,12 +136,21 @@ async function handleEvaluate(ctx: AgentContext, input: Record<string, unknown>)
   };
 }
 
-async function handleFullAnalysis(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleFullAnalysis(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Running full underwriting analysis");
 
   const financials = await handleExtractFinancials(ctx, input);
-  const proForma = await handleProForma(ctx, { ...input, financialAnalysis: financials });
-  const evaluation = await handleEvaluate(ctx, { analysis: financials, proForma });
+  const proForma = await handleProForma(ctx, {
+    ...input,
+    financialAnalysis: financials,
+  });
+  const evaluation = await handleEvaluate(ctx, {
+    analysis: financials,
+    proForma,
+  });
 
   return {
     financials,

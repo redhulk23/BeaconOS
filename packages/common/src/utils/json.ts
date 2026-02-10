@@ -8,7 +8,10 @@ export function safeJsonParse<T = unknown>(input: string): Result<T> {
   }
 }
 
-export function safeJsonStringify(value: unknown, pretty = false): Result<string> {
+export function safeJsonStringify(
+  value: unknown,
+  pretty = false,
+): Result<string> {
   try {
     return Ok(JSON.stringify(value, null, pretty ? 2 : undefined));
   } catch (e) {

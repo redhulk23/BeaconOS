@@ -1,6 +1,7 @@
 # BeaconOS — Architectural Plan
 
 > **Key Decisions**
+>
 > - **Build from scratch** — custom platform, not a wrapper around LangGraph/Temporal
 > - **Model-agnostic**, starting with Claude (Anthropic) as the primary provider
 > - **Cloud SaaS** deployment model
@@ -24,6 +25,7 @@ BeaconOS adopts a layered architecture inspired by traditional operating systems
 ### 1.2 Kernel Services
 
 **Agent Scheduler**
+
 - Priority-based scheduling of agent requests to LLM providers
 - Scheduling algorithms: FIFO, Round Robin, Priority, Weighted Fair Queuing
 - Preemptive scheduling for high-priority agents
@@ -32,12 +34,14 @@ BeaconOS adopts a layered architecture inspired by traditional operating systems
 - Claude as default model with routing to others based on task type/cost
 
 **Context Manager**
+
 - Snapshot and restore intermediate generation states
 - Context window management across LLM calls
 - Context compression and summarization for long-running agents
 - Cross-agent context sharing with access controls
 
 **Memory Manager**
+
 - Three-tier hierarchy:
   - **Working Memory**: Current task state, active conversation context (in-process)
   - **Short-Term Memory**: Recent interaction logs, session state (Redis/Valkey)
@@ -46,17 +50,20 @@ BeaconOS adopts a layered architecture inspired by traditional operating systems
 - Eviction policies (K-LRU)
 
 **Storage Manager**
+
 - Persist agent interaction logs and artifacts
 - File system abstraction for agent-generated content
 - Versioned state snapshots for reproducibility
 
 **Process Management**
+
 - Agent lifecycle tracking (spawning, running, suspended, terminated)
 - Parent-child agent relationships (multi-agent native)
 - Process groups for multi-agent workflows
 - Graceful shutdown and cleanup
 
 **Resource Allocation**
+
 - Token budgets per agent, per tenant, per time window
 - Compute allocation with CPU/GPU quotas
 - Rate limiting and throttling
@@ -64,20 +71,20 @@ BeaconOS adopts a layered architecture inspired by traditional operating systems
 
 ### 1.3 OS Concept Mapping
 
-| OS Concept | BeaconOS Analog |
-|-----------|----------------|
-| Process | Agent instance |
-| Thread | Sub-task within an agent |
-| IPC | A2A / MCP / Message bus |
-| File system | Agent storage, knowledge base |
-| Shell | CLI + Web UI |
-| Package manager | Agent registry |
-| Kernel | Scheduler, memory manager, access control |
-| Device drivers | Integration connectors (Yardi, CoStar, etc.) |
-| System calls | BeaconOS API |
-| User space vs. Kernel space | Agent sandbox vs. Platform services |
-| Init system | Agent bootstrapper and lifecycle manager |
-| Cron | Scheduled agent triggers |
+| OS Concept                  | BeaconOS Analog                              |
+| --------------------------- | -------------------------------------------- |
+| Process                     | Agent instance                               |
+| Thread                      | Sub-task within an agent                     |
+| IPC                         | A2A / MCP / Message bus                      |
+| File system                 | Agent storage, knowledge base                |
+| Shell                       | CLI + Web UI                                 |
+| Package manager             | Agent registry                               |
+| Kernel                      | Scheduler, memory manager, access control    |
+| Device drivers              | Integration connectors (Yardi, CoStar, etc.) |
+| System calls                | BeaconOS API                                 |
+| User space vs. Kernel space | Agent sandbox vs. Platform services          |
+| Init system                 | Agent bootstrapper and lifecycle manager     |
+| Cron                        | Scheduled agent triggers                     |
 
 ---
 
@@ -113,10 +120,10 @@ Central registry storing agent manifests, versions, capability catalogs, depende
 
 ### 3.1 Communication Protocols
 
-| Protocol | Purpose | Source |
-|----------|---------|--------|
-| **MCP** (Model Context Protocol) | Agent-to-tool connectivity | Anthropic |
-| **A2A** (Agent-to-Agent Protocol) | Cross-agent communication | Google |
+| Protocol                               | Purpose                        | Source    |
+| -------------------------------------- | ------------------------------ | --------- |
+| **MCP** (Model Context Protocol)       | Agent-to-tool connectivity     | Anthropic |
+| **A2A** (Agent-to-Agent Protocol)      | Cross-agent communication      | Google    |
 | **ACP** (Agent Communication Protocol) | Lightweight internal messaging | Community |
 
 BeaconOS implements MCP natively for all tool integrations and A2A for agent-to-agent communication.
@@ -174,14 +181,14 @@ Built early, not bolted on. Every feature ships with audit trails and access con
 
 ### 4.4 CRE-Specific Compliance Modules
 
-| Regulation | Scope | Agent Impact | Risk Level |
-|-----------|-------|-------------|-----------|
-| **ASC 842 / IFRS 16** | All lessees/lessors | Lease agents must support classification and measurement | High |
-| **SEC Reporting** | Public REITs, funds | Reporting agents need strict accuracy and HITL | Critical |
-| **AML/KYC (FinCEN)** | Transaction participants | Screening integrated into deal and investor agents | High |
-| **Fair Housing Act** | Tenant-facing activities | Communication and screening agents need bias guardrails | High |
-| **CERCLA / Environmental** | Acquisitions | Due diligence agents need environmental risk flagging | Medium |
-| **CCPA / GDPR** | All data processing | All agents need PII handling and deletion support | Medium |
+| Regulation                 | Scope                    | Agent Impact                                             | Risk Level |
+| -------------------------- | ------------------------ | -------------------------------------------------------- | ---------- |
+| **ASC 842 / IFRS 16**      | All lessees/lessors      | Lease agents must support classification and measurement | High       |
+| **SEC Reporting**          | Public REITs, funds      | Reporting agents need strict accuracy and HITL           | Critical   |
+| **AML/KYC (FinCEN)**       | Transaction participants | Screening integrated into deal and investor agents       | High       |
+| **Fair Housing Act**       | Tenant-facing activities | Communication and screening agents need bias guardrails  | High       |
+| **CERCLA / Environmental** | Acquisitions             | Due diligence agents need environmental risk flagging    | Medium     |
+| **CCPA / GDPR**            | All data processing      | All agents need PII handling and deletion support        | Medium     |
 
 ---
 
@@ -245,6 +252,7 @@ Every CRE platform integration is exposed as an MCP tool within BeaconOS.
 | **LightBox** | Environmental Data | Environmental risk, location intelligence |
 
 **Market Data Feeds**
+
 - MSCI Real Capital Analytics (investment sales)
 - Green Street (REIT research, valuations)
 - Placer.ai (foot traffic)
@@ -256,15 +264,15 @@ Every CRE platform integration is exposed as an MCP tool within BeaconOS.
 
 Specialized document processing for CRE document types:
 
-| Document Type | Key Extractions |
-|--------------|----------------|
-| Leases | Parties, premises, term, rent, escalations, options, CAM, TI, restrictions |
-| Rent Rolls | Unit-level occupancy, rent, lease dates, tenant names |
-| T-12 Operating Statements | Revenue, expenses, NOI by line item |
-| Offering Memorandums | Property details, financials, market analysis |
-| Estoppel Certificates | Tenant-confirmed lease terms |
-| Environmental Reports | RECs, risk factors, compliance status |
-| Appraisals | Valuation, comparable analysis, cap rates |
+| Document Type             | Key Extractions                                                            |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Leases                    | Parties, premises, term, rent, escalations, options, CAM, TI, restrictions |
+| Rent Rolls                | Unit-level occupancy, rent, lease dates, tenant names                      |
+| T-12 Operating Statements | Revenue, expenses, NOI by line item                                        |
+| Offering Memorandums      | Property details, financials, market analysis                              |
+| Estoppel Certificates     | Tenant-confirmed lease terms                                               |
+| Environmental Reports     | RECs, risk factors, compliance status                                      |
+| Appraisals                | Valuation, comparable analysis, cap rates                                  |
 
 ### 6.3 CRE Semantic Data Model
 
@@ -283,6 +291,7 @@ Comps        Cash Flows    Notifications
 ### 6.4 CRE Knowledge Graph
 
 Pre-loaded with CRE ontology:
+
 - Property types, subtypes, and characteristics
 - Market/submarket hierarchies
 - Lease structures and clause types
@@ -296,6 +305,7 @@ Pre-loaded with CRE ontology:
 ### Phase 1 Agents (Ship First)
 
 **7.1 Lease Abstraction & Administration Agent**
+
 - Ingests lease documents (PDF, scanned, Word) via OCR/NLP
 - Extracts 200+ data points per lease
 - Classifies leases for ASC 842 (operating vs. financing)
@@ -305,6 +315,7 @@ Pre-loaded with CRE ontology:
 - Guardrails: Confidence scoring, human review queue for low-confidence, mandatory HITL for ASC 842
 
 **7.2 Underwriting & Financial Modeling Agent**
+
 - Extracts data from T-12s, rent rolls, and leases
 - Builds standardized pro forma DCF models (5-10 year)
 - Calculates IRR, equity multiple, cash-on-cash, cap rate
@@ -314,6 +325,7 @@ Pre-loaded with CRE ontology:
 - Guardrails: Assumption range validation, mandatory human review, full audit trail
 
 **7.3 Deal Sourcing & Screening Agent**
+
 - Continuously monitors CoStar, LoopNet, Crexi, public records
 - Filters against configurable investment criteria
 - Performs preliminary financial screening
@@ -325,6 +337,7 @@ Pre-loaded with CRE ontology:
 ### Phase 2 Agents
 
 **7.4 Tenant Communication Agent**
+
 - 24/7 multi-channel response (email, chat, phone, portal)
 - Handles maintenance requests, amenity bookings, access
 - Automated lease renewal outreach
@@ -332,6 +345,7 @@ Pre-loaded with CRE ontology:
 - Guardrails: Fair Housing compliance, escalation for legal/sensitive matters
 
 **7.5 Market Analysis & Comp Agent**
+
 - Automated comparable sale/lease identification
 - ML-powered comp scoring and relevance ranking
 - Submarket fundamental analysis
@@ -339,6 +353,7 @@ Pre-loaded with CRE ontology:
 - Guardrails: Data source attribution, confidence intervals, disclaimer language
 
 **7.6 Due Diligence Agent**
+
 - Document ingestion, classification, and extraction
 - Risk flagging (zoning, environmental, lease anomalies)
 - Estoppel vs. lease comparison
@@ -349,6 +364,7 @@ Pre-loaded with CRE ontology:
 ### Phase 3 Agents
 
 **7.7 Financial Reporting & IR Agent**
+
 - Data aggregation from property-level systems to fund-level
 - Quarterly/annual investor report generation
 - Waterfall calculations and distribution modeling
@@ -356,6 +372,7 @@ Pre-loaded with CRE ontology:
 - Guardrails: Mandatory HITL for all investor/SEC content, Regulation FD compliance
 
 **7.8 Portfolio Optimization Agent**
+
 - Continuous portfolio performance monitoring
 - Hold/sell/refinance analysis
 - Lease rollover risk analysis
@@ -418,6 +435,7 @@ Pre-loaded with CRE ontology:
 ### 10.2 CRE Agent Templates
 
 Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
+
 - Lease Abstraction, Underwriting, Deal Sourcing, Tenant Communication
 - Market Analysis, Due Diligence, Financial Reporting, Portfolio Optimization
 
@@ -538,26 +556,26 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 
 ## 14. Technology Stack
 
-| Layer | Primary Choice | Alternatives |
-|-------|---------------|-------------|
-| **Cloud** | AWS (EKS, RDS, S3, etc.) | GCP |
-| **API Gateway** | Kong / Envoy | AWS API Gateway |
-| **Orchestration** | Custom (built from scratch) | — |
-| **Message Bus** | NATS JetStream | Kafka, Redis Streams |
-| **Agent Runtime** | Kubernetes + gVisor | Kata Containers |
-| **Primary Database** | PostgreSQL (RDS) | CockroachDB |
-| **Cache / Hot State** | Redis / Valkey (ElastiCache) | DragonflyDB |
-| **Vector Store** | pgvector + Qdrant | Pinecone, Weaviate |
-| **Knowledge Graph** | Neo4j / Apache AGE | Amazon Neptune |
-| **Object Storage** | S3 | — |
-| **Observability** | OpenTelemetry + Langfuse | Datadog |
-| **Auth** | Keycloak | Auth0, Ory |
-| **CI/CD** | GitHub Actions | — |
-| **SDK Languages** | TypeScript + Python | — |
-| **Web UI** | Next.js + React | — |
-| **Agent Memory** | Mem0 | Custom |
-| **Primary LLM** | Claude (Anthropic) | OpenAI, Google, open-source |
-| **Document OCR/NLP** | Custom pipeline (Tesseract + Claude) | AWS Textract |
+| Layer                 | Primary Choice                       | Alternatives                |
+| --------------------- | ------------------------------------ | --------------------------- |
+| **Cloud**             | AWS (EKS, RDS, S3, etc.)             | GCP                         |
+| **API Gateway**       | Kong / Envoy                         | AWS API Gateway             |
+| **Orchestration**     | Custom (built from scratch)          | —                           |
+| **Message Bus**       | NATS JetStream                       | Kafka, Redis Streams        |
+| **Agent Runtime**     | Kubernetes + gVisor                  | Kata Containers             |
+| **Primary Database**  | PostgreSQL (RDS)                     | CockroachDB                 |
+| **Cache / Hot State** | Redis / Valkey (ElastiCache)         | DragonflyDB                 |
+| **Vector Store**      | pgvector + Qdrant                    | Pinecone, Weaviate          |
+| **Knowledge Graph**   | Neo4j / Apache AGE                   | Amazon Neptune              |
+| **Object Storage**    | S3                                   | —                           |
+| **Observability**     | OpenTelemetry + Langfuse             | Datadog                     |
+| **Auth**              | Keycloak                             | Auth0, Ory                  |
+| **CI/CD**             | GitHub Actions                       | —                           |
+| **SDK Languages**     | TypeScript + Python                  | —                           |
+| **Web UI**            | Next.js + React                      | —                           |
+| **Agent Memory**      | Mem0                                 | Custom                      |
+| **Primary LLM**       | Claude (Anthropic)                   | OpenAI, Google, open-source |
+| **Document OCR/NLP**  | Custom pipeline (Tesseract + Claude) | AWS Textract                |
 
 ---
 
@@ -566,6 +584,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 ### Phase 1: Foundation + First CRE Agents (Months 1-4)
 
 **Platform**
+
 - Core kernel: agent scheduler, memory manager, process lifecycle
 - Multi-agent orchestration engine (all 8 patterns)
 - Agent SDK (TypeScript) with YAML manifest format
@@ -577,6 +596,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 - RBAC access control framework
 
 **CRE**
+
 - CRE Document Intelligence Pipeline (OCR + NLP extraction)
 - Yardi connector (MCP tool)
 - MRI Software connector (MCP tool)
@@ -589,6 +609,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 - AML/KYC screening integration (for deal sourcing agent)
 
 **Compliance**
+
 - Audit trail infrastructure (append-only logs, data lineage)
 - PII detection and redaction
 - Agent identity and human sponsor framework
@@ -597,6 +618,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 ### Phase 2: Enterprise Features + More Agents (Months 5-7)
 
 **Platform**
+
 - Web dashboard (Next.js) — agent status, logs, approvals, cost tracking
 - Human-in-the-loop approval workflow engine
 - ABAC fine-grained authorization
@@ -606,6 +628,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 - Additional model providers (OpenAI, Google)
 
 **CRE**
+
 - Argus Enterprise connector
 - CompStak connector
 - VTS connector
@@ -617,6 +640,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 - **Due Diligence Agent**
 
 **Compliance**
+
 - SOC 2 Type II controls implementation
 - SEC reporting guardrails
 - Data residency controls
@@ -625,6 +649,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 ### Phase 3: Scale + Advanced Agents (Months 8-10)
 
 **Platform**
+
 - Kubernetes + gVisor sandboxing for production
 - Autoscaling and performance optimization
 - Advanced observability (debugging replay, A/B testing)
@@ -633,6 +658,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 - Python SDK
 
 **CRE**
+
 - Juniper Square connector
 - RealPage connector
 - Environmental database integrations (LightBox)
@@ -642,6 +668,7 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 - CRE agent template library (customizable per firm)
 
 **Compliance**
+
 - SOC 2 Type II audit preparation
 - ISO 27001 alignment
 - Compliance certification documentation
@@ -662,13 +689,13 @@ Pre-built templates for all 8 CRE agent archetypes, customizable per firm:
 
 ### Direct CRE AI Competitors
 
-| Competitor | Raised | Focus | BeaconOS Advantage |
-|-----------|--------|-------|-------------------|
-| Cadastral | $9.5M | CRE vertical AI agents | Platform vs. point solution; multi-agent orchestration |
-| CRE Agents | Early | Digital coworkers for CRE | Enterprise governance, compliance-first |
-| Cherre Agent.STUDIO | $30M | AI agents on data layer | Broader integration, custom agent composition |
-| Visitt | $22M | Property operations AI | Full deal lifecycle, not just ops |
-| Edge Partners AI | Active | CRE automation | Multi-agent coordination, compliance modules |
+| Competitor          | Raised | Focus                     | BeaconOS Advantage                                     |
+| ------------------- | ------ | ------------------------- | ------------------------------------------------------ |
+| Cadastral           | $9.5M  | CRE vertical AI agents    | Platform vs. point solution; multi-agent orchestration |
+| CRE Agents          | Early  | Digital coworkers for CRE | Enterprise governance, compliance-first                |
+| Cherre Agent.STUDIO | $30M   | AI agents on data layer   | Broader integration, custom agent composition          |
+| Visitt              | $22M   | Property operations AI    | Full deal lifecycle, not just ops                      |
+| Edge Partners AI    | Active | CRE automation            | Multi-agent coordination, compliance modules           |
 
 ### BeaconOS Differentiators
 

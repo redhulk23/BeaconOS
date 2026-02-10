@@ -4,7 +4,8 @@ export const LEASE_ABSTRACTION_MANIFEST = {
   metadata: {
     name: "lease-abstraction",
     version: "0.1.0",
-    description: "Extracts 200+ data points from commercial lease documents with ASC 842 classification",
+    description:
+      "Extracts 200+ data points from commercial lease documents with ASC 842 classification",
     tags: ["cre", "lease", "extraction", "compliance"],
   },
   spec: {
@@ -29,11 +30,7 @@ export const LEASE_ABSTRACTION_MANIFEST = {
       maxTokensPerRun: 200_000,
       timeoutMs: 600_000,
     },
-    permissions: [
-      "agents:run",
-      "tools:execute",
-      "approvals:read",
-    ],
+    permissions: ["agents:run", "tools:execute", "approvals:read"],
     guardrails: {
       piiRedaction: true,
       fairHousing: true,
@@ -67,7 +64,8 @@ export const LEASE_ABSTRACTION_WORKFLOW = {
       name: "review-extraction",
       type: "approval" as const,
       title: "Review Lease Extraction",
-      description: "Review extracted lease data points and ASC 842 classification",
+      description:
+        "Review extracted lease data points and ASC 842 classification",
     },
     {
       name: "write-to-pms",
@@ -79,7 +77,8 @@ export const LEASE_ABSTRACTION_WORKFLOW = {
   ],
   config: {
     title: "Lease Abstraction Review",
-    description: "Review extracted lease data for accuracy before writing to property management system",
+    description:
+      "Review extracted lease data for accuracy before writing to property management system",
     timeoutMs: 86_400_000,
   },
 } as const;

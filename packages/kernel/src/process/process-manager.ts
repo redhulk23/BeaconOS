@@ -13,7 +13,11 @@ import { getDb, agentRuns, agentRunSteps } from "@beacon-os/db";
 import { eq } from "drizzle-orm";
 import { getAuditLogger } from "@beacon-os/audit";
 import { ModelRouter } from "@beacon-os/model-router";
-import { AgentProcess, type AgentProcessConfig, type StepRecord } from "./agent-process.js";
+import {
+  AgentProcess,
+  type AgentProcessConfig,
+  type StepRecord,
+} from "./agent-process.js";
 import { AgentScheduler, type ScheduledRun } from "../scheduler/scheduler.js";
 import { MemoryManager } from "../memory/memory-manager.js";
 import { ResourceManager } from "../resource/resource-manager.js";
@@ -165,7 +169,10 @@ export class ProcessManager {
         .set({
           status: result.status,
           output: result.output ?? undefined,
-          error: result.status === "failed" ? String(result.output?.error) : undefined,
+          error:
+            result.status === "failed"
+              ? String(result.output?.error)
+              : undefined,
           totalTokens: result.totalTokens,
           totalSteps: result.steps.length,
           durationMs,

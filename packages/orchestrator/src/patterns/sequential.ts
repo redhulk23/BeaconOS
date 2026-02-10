@@ -16,7 +16,10 @@ export async function runSequential(
     await saveCheckpoint(workflowRunId, ctx.state);
 
     const result = await executeStep(step, ctx);
-    ctx.state.stepResults[step.id] = { status: result.status, output: result.output };
+    ctx.state.stepResults[step.id] = {
+      status: result.status,
+      output: result.output,
+    };
 
     if (result.status === "failed") {
       ctx.state.status = "failed";

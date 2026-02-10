@@ -91,7 +91,10 @@ function flattenObject(
   for (const [key, value] of Object.entries(obj)) {
     const newKey = prefix ? `${prefix}.${key}` : key;
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-      Object.assign(result, flattenObject(value as Record<string, unknown>, newKey));
+      Object.assign(
+        result,
+        flattenObject(value as Record<string, unknown>, newKey),
+      );
     } else {
       result[newKey] = value;
     }

@@ -30,12 +30,18 @@ export interface EvaluationSummary {
 }
 
 export class EvaluationRunner {
-  private handler: (ctx: AgentContext, input: Record<string, unknown>) => Promise<unknown>;
+  private handler: (
+    ctx: AgentContext,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>;
   private modelConfig?: MockModelProviderConfig;
   private scoringFn: (actual: string, expected: string) => number;
 
   constructor(
-    handler: (ctx: AgentContext, input: Record<string, unknown>) => Promise<unknown>,
+    handler: (
+      ctx: AgentContext,
+      input: Record<string, unknown>,
+    ) => Promise<unknown>,
     options?: {
       modelConfig?: MockModelProviderConfig;
       scoringFn?: (actual: string, expected: string) => number;
@@ -51,11 +57,14 @@ export class EvaluationRunner {
 
     for (const evalCase of cases) {
       const start = Date.now();
-      const { ctx, modelProvider } = createExtendedMockContext({ modelConfig: this.modelConfig });
+      const { ctx, modelProvider } = createExtendedMockContext({
+        modelConfig: this.modelConfig,
+      });
 
       try {
         const output = await this.handler(ctx, evalCase.input);
-        const actualOutput = typeof output === "string" ? output : JSON.stringify(output);
+        const actualOutput =
+          typeof output === "string" ? output : JSON.stringify(output);
         const score = this.scoringFn(actualOutput, evalCase.expectedOutput);
 
         scores.push({
@@ -65,7 +74,10 @@ export class EvaluationRunner {
           actualOutput,
           expectedOutput: evalCase.expectedOutput,
           durationMs: Date.now() - start,
-          tokenUsage: modelProvider.calls.reduce((sum, c) => sum + c.response.usage.totalTokens, 0),
+          tokenUsage: modelProvider.calls.reduce(
+            (sum, c) => sum + c.response.usage.totalTokens,
+            0,
+          ),
         });
       } catch (error) {
         scores.push({
@@ -85,8 +97,12 @@ export class EvaluationRunner {
       totalCases: cases.length,
       passed,
       failed: cases.length - passed,
-      avgScore: scores.reduce((sum, s) => sum + s.score, 0) / Math.max(scores.length, 1),
-      avgDurationMs: scores.reduce((sum, s) => sum + s.durationMs, 0) / Math.max(scores.length, 1),
+      avgScore:
+        scores.reduce((sum, s) => sum + s.score, 0) /
+        Math.max(scores.length, 1),
+      avgDurationMs:
+        scores.reduce((sum, s) => sum + s.durationMs, 0) /
+        Math.max(scores.length, 1),
       totalTokens: scores.reduce((sum, s) => sum + s.tokenUsage, 0),
       scores,
     };
@@ -97,7 +113,11 @@ function defaultScoring(actual: string, expected: string): number {
   if (actual === expected) return 1.0;
   const actualLower = actual.toLowerCase();
   const expectedLower = expected.toLowerCase();
-  if (actualLower.includes(expectedLower) || expectedLower.includes(actualLower)) return 0.8;
+  if (
+    actualLower.includes(expectedLower) ||
+    expectedLower.includes(actualLower)
+  )
+    return 0.8;
   const expectedWords = expectedLower.split(/\s+/);
   const matchedWords = expectedWords.filter((w) => actualLower.includes(w));
   return matchedWords.length / Math.max(expectedWords.length, 1);

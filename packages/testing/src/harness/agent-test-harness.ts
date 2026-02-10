@@ -1,5 +1,8 @@
 import type { AgentContext } from "@beacon-os/sdk";
-import { createExtendedMockContext, type ExtendedMockContextOptions } from "../mocks/mock-context-extended.js";
+import {
+  createExtendedMockContext,
+  type ExtendedMockContextOptions,
+} from "../mocks/mock-context-extended.js";
 import type { MockModelProviderConfig } from "../mocks/mock-model-provider.js";
 
 export interface AgentTestCase {
@@ -20,7 +23,10 @@ export interface AgentTestResult {
 }
 
 export async function runAgentTest(
-  handler: (ctx: AgentContext, input: Record<string, unknown>) => Promise<unknown>,
+  handler: (
+    ctx: AgentContext,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>,
   testCase: AgentTestCase,
   contextOptions?: ExtendedMockContextOptions,
 ): Promise<AgentTestResult> {
@@ -38,7 +44,8 @@ export async function runAgentTest(
     if (testCase.validate) {
       passed = testCase.validate(output);
     } else if (testCase.expectedOutput) {
-      passed = JSON.stringify(output) === JSON.stringify(testCase.expectedOutput);
+      passed =
+        JSON.stringify(output) === JSON.stringify(testCase.expectedOutput);
     }
 
     return {
@@ -61,10 +68,18 @@ export async function runAgentTest(
 }
 
 export async function runAgentTestSuite(
-  handler: (ctx: AgentContext, input: Record<string, unknown>) => Promise<unknown>,
+  handler: (
+    ctx: AgentContext,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>,
   testCases: AgentTestCase[],
   contextOptions?: ExtendedMockContextOptions,
-): Promise<{ results: AgentTestResult[]; passed: number; failed: number; totalMs: number }> {
+): Promise<{
+  results: AgentTestResult[];
+  passed: number;
+  failed: number;
+  totalMs: number;
+}> {
   const results: AgentTestResult[] = [];
   const suiteStart = Date.now();
 

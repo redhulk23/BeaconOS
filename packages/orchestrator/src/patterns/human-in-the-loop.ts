@@ -2,7 +2,10 @@ import type { WorkflowStep } from "../workflow-parser.js";
 import type { WorkflowState } from "../state-machine.js";
 import { executeStep, type StepExecutionContext } from "../step-executor.js";
 import { saveCheckpoint } from "../checkpoint.js";
-import { createApprovalRequest, waitForApproval } from "../hitl/approval-gate.js";
+import {
+  createApprovalRequest,
+  waitForApproval,
+} from "../hitl/approval-gate.js";
 
 export async function runHumanInTheLoop(
   preSteps: WorkflowStep[],
@@ -20,7 +23,10 @@ export async function runHumanInTheLoop(
     await saveCheckpoint(workflowRunId, ctx.state);
 
     const result = await executeStep(step, ctx);
-    ctx.state.stepResults[step.id] = { status: result.status, output: result.output };
+    ctx.state.stepResults[step.id] = {
+      status: result.status,
+      output: result.output,
+    };
 
     if (result.status === "failed") {
       ctx.state.status = "failed";
@@ -72,7 +78,10 @@ export async function runHumanInTheLoop(
     await saveCheckpoint(workflowRunId, ctx.state);
 
     const result = await executeStep(step, ctx);
-    ctx.state.stepResults[step.id] = { status: result.status, output: result.output };
+    ctx.state.stepResults[step.id] = {
+      status: result.status,
+      output: result.output,
+    };
 
     if (result.status === "failed") {
       ctx.state.status = "failed";

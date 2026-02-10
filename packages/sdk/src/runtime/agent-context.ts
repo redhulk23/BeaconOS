@@ -1,4 +1,8 @@
-import type { ModelResponse, ModelStreamChunk, Logger } from "@beacon-os/common";
+import type {
+  ModelResponse,
+  ModelStreamChunk,
+  Logger,
+} from "@beacon-os/common";
 
 export interface ModelProxy {
   complete(
@@ -18,7 +22,11 @@ export interface ToolProxy {
 
 export interface MemoryProxy {
   get(key: string): Promise<unknown | null>;
-  set(key: string, value: unknown, tier?: "working" | "short" | "long"): Promise<void>;
+  set(
+    key: string,
+    value: unknown,
+    tier?: "working" | "short" | "long",
+  ): Promise<void>;
   delete(key: string): Promise<void>;
 }
 

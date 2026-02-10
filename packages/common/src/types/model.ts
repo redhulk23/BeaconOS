@@ -43,7 +43,12 @@ export interface ModelUsage {
 }
 
 export interface ModelStreamChunk {
-  type: "text" | "tool_call_start" | "tool_call_delta" | "tool_call_end" | "done";
+  type:
+    | "text"
+    | "tool_call_start"
+    | "tool_call_delta"
+    | "tool_call_end"
+    | "done";
   content?: string;
   toolCall?: Partial<ModelToolCall>;
   usage?: ModelUsage;

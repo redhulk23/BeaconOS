@@ -23,12 +23,17 @@ const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
   cancelled: [],
 };
 
-export function canTransition(from: WorkflowStatus, to: WorkflowStatus): boolean {
+export function canTransition(
+  from: WorkflowStatus,
+  to: WorkflowStatus,
+): boolean {
   return VALID_TRANSITIONS[from]?.includes(to) ?? false;
 }
 
 export function isTerminal(status: WorkflowStatus): boolean {
-  return status === "completed" || status === "failed" || status === "cancelled";
+  return (
+    status === "completed" || status === "failed" || status === "cancelled"
+  );
 }
 
 export interface WorkflowState {
@@ -41,7 +46,9 @@ export interface WorkflowState {
   completedAt?: Date;
 }
 
-export function createInitialState(input?: Record<string, unknown>): WorkflowState {
+export function createInitialState(
+  input?: Record<string, unknown>,
+): WorkflowState {
   return {
     status: "pending",
     currentStep: null,

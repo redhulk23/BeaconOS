@@ -55,8 +55,8 @@ const MOCK_COMPS: CompStakLeaseComp[] = [
     submarket: "CBD",
     tenantName: "TechCo Inc",
     tenantIndustry: "Technology",
-    startingRent: 52.00,
-    effectiveRent: 48.50,
+    startingRent: 52.0,
+    effectiveRent: 48.5,
     rentType: "nnn",
     sqft: 15000,
     term: 84,
@@ -78,8 +78,8 @@ const MOCK_COMPS: CompStakLeaseComp[] = [
     submarket: "CBD",
     tenantName: "Legal Partners LLP",
     tenantIndustry: "Legal",
-    startingRent: 48.00,
-    effectiveRent: 45.00,
+    startingRent: 48.0,
+    effectiveRent: 45.0,
     rentType: "nnn",
     sqft: 8000,
     term: 60,
@@ -101,8 +101,8 @@ const MOCK_COMPS: CompStakLeaseComp[] = [
     submarket: "East Austin",
     tenantName: "Creative Studios",
     tenantIndustry: "Media",
-    startingRent: 38.00,
-    effectiveRent: 35.50,
+    startingRent: 38.0,
+    effectiveRent: 35.5,
     rentType: "modified_gross",
     sqft: 5000,
     term: 36,
@@ -119,7 +119,7 @@ const MOCK_COMPS: CompStakLeaseComp[] = [
 const MOCK_STATS: CompStakMarketStats = {
   submarket: "CBD",
   propertyType: "office",
-  avgStartingRent: 50.00,
+  avgStartingRent: 50.0,
   avgEffectiveRent: 46.75,
   avgTermMonths: 72,
   avgTiAllowance: 55,
@@ -130,27 +130,50 @@ const MOCK_STATS: CompStakMarketStats = {
 
 // --- MCP Tool Functions ---
 
-export async function compstakSearchComps(input: { city: string; state: string; submarket?: string; propertyType?: string; minSqft?: number; maxSqft?: number }): Promise<CompStakLeaseComp[]> {
+export async function compstakSearchComps(input: {
+  city: string;
+  state: string;
+  submarket?: string;
+  propertyType?: string;
+  minSqft?: number;
+  maxSqft?: number;
+}): Promise<CompStakLeaseComp[]> {
   log.info(input, "Searching lease comps in CompStak");
   return MOCK_COMPS.filter((c) => {
     if (c.city.toLowerCase() !== input.city.toLowerCase()) return false;
     if (c.state.toLowerCase() !== input.state.toLowerCase()) return false;
-    if (input.submarket && c.submarket.toLowerCase() !== input.submarket.toLowerCase()) return false;
-    if (input.propertyType && c.propertyType !== input.propertyType) return false;
+    if (
+      input.submarket &&
+      c.submarket.toLowerCase() !== input.submarket.toLowerCase()
+    )
+      return false;
+    if (input.propertyType && c.propertyType !== input.propertyType)
+      return false;
     if (input.minSqft && c.sqft < input.minSqft) return false;
     if (input.maxSqft && c.sqft > input.maxSqft) return false;
     return true;
   });
 }
 
-export async function compstakGetCompDetail(input: { compId: string }): Promise<CompStakLeaseComp | null> {
+export async function compstakGetCompDetail(input: {
+  compId: string;
+}): Promise<CompStakLeaseComp | null> {
   log.info({ compId: input.compId }, "Getting comp detail from CompStak");
   return MOCK_COMPS.find((c) => c.compId === input.compId) ?? null;
 }
 
-export async function compstakMarketStats(input: { city: string; state: string; submarket?: string; propertyType?: string }): Promise<CompStakMarketStats> {
+export async function compstakMarketStats(input: {
+  city: string;
+  state: string;
+  submarket?: string;
+  propertyType?: string;
+}): Promise<CompStakMarketStats> {
   log.info(input, "Getting market stats from CompStak");
-  return { ...MOCK_STATS, submarket: input.submarket ?? "CBD", propertyType: input.propertyType ?? "office" };
+  return {
+    ...MOCK_STATS,
+    submarket: input.submarket ?? "CBD",
+    propertyType: input.propertyType ?? "office",
+  };
 }
 
 // --- Tool Definitions ---
@@ -158,12 +181,17 @@ export async function compstakMarketStats(input: { city: string; state: string; 
 export const compstakTools = [
   {
     name: "compstak_search_comps",
-    description: "Search for lease comparables in CompStak by location, property type, and size",
+    description:
+      "Search for lease comparables in CompStak by location, property type, and size",
     inputSchema: {
       type: "object",
       properties: {
-        city: { type: "string" }, state: { type: "string" }, submarket: { type: "string" },
-        propertyType: { type: "string" }, minSqft: { type: "number" }, maxSqft: { type: "number" },
+        city: { type: "string" },
+        state: { type: "string" },
+        submarket: { type: "string" },
+        propertyType: { type: "string" },
+        minSqft: { type: "number" },
+        maxSqft: { type: "number" },
       },
       required: ["city", "state"],
     },
@@ -171,16 +199,27 @@ export const compstakTools = [
   },
   {
     name: "compstak_get_comp_detail",
-    description: "Get detailed information about a specific lease comparable from CompStak",
-    inputSchema: { type: "object", properties: { compId: { type: "string" } }, required: ["compId"] },
+    description:
+      "Get detailed information about a specific lease comparable from CompStak",
+    inputSchema: {
+      type: "object",
+      properties: { compId: { type: "string" } },
+      required: ["compId"],
+    },
     execute: compstakGetCompDetail,
   },
   {
     name: "compstak_market_stats",
-    description: "Get aggregate market statistics for a submarket from CompStak",
+    description:
+      "Get aggregate market statistics for a submarket from CompStak",
     inputSchema: {
       type: "object",
-      properties: { city: { type: "string" }, state: { type: "string" }, submarket: { type: "string" }, propertyType: { type: "string" } },
+      properties: {
+        city: { type: "string" },
+        state: { type: "string" },
+        submarket: { type: "string" },
+        propertyType: { type: "string" },
+      },
       required: ["city", "state"],
     },
     execute: compstakMarketStats,

@@ -109,7 +109,9 @@ agents.get("/:id", requirePermission(Permission.AGENTS_READ), async (c) => {
   const agent = await db
     .select()
     .from(agentDefinitions)
-    .where(and(eq(agentDefinitions.id, id), eq(agentDefinitions.tenantId, tenantId)))
+    .where(
+      and(eq(agentDefinitions.id, id), eq(agentDefinitions.tenantId, tenantId)),
+    )
     .then((rows) => rows[0]);
 
   if (!agent) {
@@ -127,14 +129,18 @@ agents.patch("/:id", requirePermission(Permission.AGENTS_UPDATE), async (c) => {
   const parsed = UpdateAgentSchema.safeParse(body);
 
   if (!parsed.success) {
-    throw new ValidationError("Invalid update", { issues: parsed.error.issues });
+    throw new ValidationError("Invalid update", {
+      issues: parsed.error.issues,
+    });
   }
 
   const db = getDb();
   const existing = await db
     .select()
     .from(agentDefinitions)
-    .where(and(eq(agentDefinitions.id, id), eq(agentDefinitions.tenantId, tenantId)))
+    .where(
+      and(eq(agentDefinitions.id, id), eq(agentDefinitions.tenantId, tenantId)),
+    )
     .then((rows) => rows[0]);
 
   if (!existing) {
@@ -143,7 +149,8 @@ agents.patch("/:id", requirePermission(Permission.AGENTS_UPDATE), async (c) => {
 
   const updates: Record<string, unknown> = { updatedAt: new Date() };
   if (parsed.data.name) updates.name = parsed.data.name;
-  if (parsed.data.description !== undefined) updates.description = parsed.data.description;
+  if (parsed.data.description !== undefined)
+    updates.description = parsed.data.description;
   if (parsed.data.manifest) updates.manifest = parsed.data.manifest;
   if (parsed.data.status) updates.status = parsed.data.status;
 
@@ -173,37 +180,46 @@ agents.patch("/:id", requirePermission(Permission.AGENTS_UPDATE), async (c) => {
 });
 
 // DELETE /api/v1/agents/:id — Delete (archive) agent
-agents.delete("/:id", requirePermission(Permission.AGENTS_DELETE), async (c) => {
-  const tenantId = c.get("tenantId");
-  const id = c.req.param("id");
-  const db = getDb();
+agents.delete(
+  "/:id",
+  requirePermission(Permission.AGENTS_DELETE),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const id = c.req.param("id");
+    const db = getDb();
 
-  const existing = await db
-    .select()
-    .from(agentDefinitions)
-    .where(and(eq(agentDefinitions.id, id), eq(agentDefinitions.tenantId, tenantId)))
-    .then((rows) => rows[0]);
+    const existing = await db
+      .select()
+      .from(agentDefinitions)
+      .where(
+        and(
+          eq(agentDefinitions.id, id),
+          eq(agentDefinitions.tenantId, tenantId),
+        ),
+      )
+      .then((rows) => rows[0]);
 
-  if (!existing) {
-    throw new NotFoundError("Agent", id);
-  }
+    if (!existing) {
+      throw new NotFoundError("Agent", id);
+    }
 
-  await db
-    .update(agentDefinitions)
-    .set({ status: "archived", updatedAt: new Date() })
-    .where(eq(agentDefinitions.id, id));
+    await db
+      .update(agentDefinitions)
+      .set({ status: "archived", updatedAt: new Date() })
+      .where(eq(agentDefinitions.id, id));
 
-  const audit = getAuditLogger();
-  await audit.log({
-    tenantId,
-    action: "agent.deleted",
-    actorId: c.get("user").id,
-    actorType: "user",
-    resourceType: "agent",
-    resourceId: id,
-  });
+    const audit = getAuditLogger();
+    await audit.log({
+      tenantId,
+      action: "agent.deleted",
+      actorId: c.get("user").id,
+      actorType: "user",
+      resourceType: "agent",
+      resourceId: id,
+    });
 
-  return c.json({ data: { id, status: "archived" } });
-});
+    return c.json({ data: { id, status: "archived" } });
+  },
+);
 
 export { agents };

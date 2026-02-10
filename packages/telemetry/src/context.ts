@@ -1,4 +1,9 @@
-import { context as otelContext, trace, propagation, type Span as OtelSpan } from "@opentelemetry/api";
+import {
+  context as otelContext,
+  trace,
+  propagation,
+  type Span as OtelSpan,
+} from "@opentelemetry/api";
 
 export interface TraceContext {
   traceId: string;

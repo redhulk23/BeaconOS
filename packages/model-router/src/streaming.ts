@@ -1,4 +1,8 @@
-import type { ModelStreamChunk, ModelResponse, ModelUsage } from "@beacon-os/common";
+import type {
+  ModelStreamChunk,
+  ModelResponse,
+  ModelUsage,
+} from "@beacon-os/common";
 
 export async function collectStream(
   stream: AsyncIterable<ModelStreamChunk>,

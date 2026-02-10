@@ -4,7 +4,8 @@ export const DUE_DILIGENCE_MANIFEST = {
   metadata: {
     name: "due-diligence",
     version: "0.1.0",
-    description: "Supports acquisition due diligence with document classification, data extraction, estoppel comparison, and risk flagging",
+    description:
+      "Supports acquisition due diligence with document classification, data extraction, estoppel comparison, and risk flagging",
     tags: ["cre", "due-diligence", "acquisition", "risk"],
   },
   spec: {
@@ -33,11 +34,7 @@ export const DUE_DILIGENCE_MANIFEST = {
       maxTokensPerRun: 500_000,
       timeoutMs: 1_200_000,
     },
-    permissions: [
-      "agents:run",
-      "tools:execute",
-      "approvals:read",
-    ],
+    permissions: ["agents:run", "tools:execute", "approvals:read"],
     guardrails: {
       piiRedaction: true,
       fairHousing: false,
@@ -85,7 +82,8 @@ export const DUE_DILIGENCE_WORKFLOW = {
       name: "review-findings",
       type: "approval" as const,
       title: "Review Due Diligence Findings",
-      description: "Review flagged risks and due diligence findings before updating checklist",
+      description:
+        "Review flagged risks and due diligence findings before updating checklist",
     },
     {
       name: "update-checklist",
@@ -97,7 +95,8 @@ export const DUE_DILIGENCE_WORKFLOW = {
   ],
   config: {
     title: "Due Diligence Review",
-    description: "Comprehensive due diligence analysis with human review of findings",
+    description:
+      "Comprehensive due diligence analysis with human review of findings",
     timeoutMs: 172_800_000,
   },
 } as const;

@@ -2,9 +2,18 @@ import { createLogger } from "@beacon-os/common";
 import type { ModelRouter } from "@beacon-os/model-router";
 import { parsePdf, isPdfScanned } from "./ingestion/pdf-parser.js";
 import { performOcr } from "./ingestion/ocr.js";
-import { extractLease, type LeaseExtractionResult } from "./extraction/lease-extractor.js";
-import { extractRentRoll, type RentRollExtractionResult } from "./extraction/rent-roll-extractor.js";
-import { extractT12, type T12ExtractionResult } from "./extraction/t12-extractor.js";
+import {
+  extractLease,
+  type LeaseExtractionResult,
+} from "./extraction/lease-extractor.js";
+import {
+  extractRentRoll,
+  type RentRollExtractionResult,
+} from "./extraction/rent-roll-extractor.js";
+import {
+  extractT12,
+  type T12ExtractionResult,
+} from "./extraction/t12-extractor.js";
 import { getReviewQueue } from "./output/review-queue.js";
 
 const log = createLogger("cre-doc-intel:pipeline");
@@ -26,7 +35,10 @@ export interface PipelineResult {
   text: string;
   pageCount: number;
   ocrRequired: boolean;
-  extractionResult: LeaseExtractionResult | RentRollExtractionResult | T12ExtractionResult;
+  extractionResult:
+    | LeaseExtractionResult
+    | RentRollExtractionResult
+    | T12ExtractionResult;
   reviewItemId?: string;
 }
 
@@ -57,24 +69,45 @@ export class DocumentIntelligencePipeline {
     }
 
     // Step 3: Extract based on document type
-    let extractionResult: LeaseExtractionResult | RentRollExtractionResult | T12ExtractionResult;
+    let extractionResult:
+      | LeaseExtractionResult
+      | RentRollExtractionResult
+      | T12ExtractionResult;
 
     switch (input.documentType) {
       case "lease":
       case "amendment":
-        extractionResult = await extractLease(text, this.modelRouter, input.tenantId, input.agentId);
+        extractionResult = await extractLease(
+          text,
+          this.modelRouter,
+          input.tenantId,
+          input.agentId,
+        );
         break;
       case "rent_roll":
-        extractionResult = await extractRentRoll(text, this.modelRouter, input.tenantId, input.agentId);
+        extractionResult = await extractRentRoll(
+          text,
+          this.modelRouter,
+          input.tenantId,
+          input.agentId,
+        );
         break;
       case "t12":
-        extractionResult = await extractT12(text, this.modelRouter, input.tenantId, input.agentId);
+        extractionResult = await extractT12(
+          text,
+          this.modelRouter,
+          input.tenantId,
+          input.agentId,
+        );
         break;
     }
 
     // Step 4: Queue for review if needed
     let reviewItemId: string | undefined;
-    if ("confidenceReport" in extractionResult && extractionResult.confidenceReport.reviewRequired) {
+    if (
+      "confidenceReport" in extractionResult &&
+      extractionResult.confidenceReport.reviewRequired
+    ) {
       const queue = getReviewQueue();
       reviewItemId = queue.enqueue(
         input.documentId,
@@ -83,11 +116,19 @@ export class DocumentIntelligencePipeline {
         extractionResult.fields as Record<string, unknown>,
         extractionResult.confidenceReport,
       );
-      log.info({ reviewItemId }, "Low-confidence extraction queued for HITL review");
+      log.info(
+        { reviewItemId },
+        "Low-confidence extraction queued for HITL review",
+      );
     }
 
     log.info(
-      { documentId: input.documentId, type: input.documentType, ocrRequired, reviewItemId },
+      {
+        documentId: input.documentId,
+        type: input.documentType,
+        ocrRequired,
+        reviewItemId,
+      },
       "Pipeline completed",
     );
 

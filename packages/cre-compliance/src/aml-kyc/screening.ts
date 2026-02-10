@@ -66,12 +66,20 @@ const MOCK_SDN_ENTRIES = [
  * Screen an entity against OFAC SDN list (mock implementation).
  * In production, this would call the OFAC API or a screening service like Dow Jones, Refinitiv, etc.
  */
-export async function screenEntity(request: ScreeningRequest): Promise<ScreeningResult> {
-  log.info({ entity: request.entityName, type: request.entityType }, "Screening entity against OFAC SDN");
+export async function screenEntity(
+  request: ScreeningRequest,
+): Promise<ScreeningResult> {
+  log.info(
+    { entity: request.entityName, type: request.entityType },
+    "Screening entity against OFAC SDN",
+  );
 
   const matches: ScreeningMatch[] = [];
   const normalizedName = request.entityName.toUpperCase().trim();
-  const allNames = [normalizedName, ...(request.aliases ?? []).map((a) => a.toUpperCase().trim())];
+  const allNames = [
+    normalizedName,
+    ...(request.aliases ?? []).map((a) => a.toUpperCase().trim()),
+  ];
 
   for (const entry of MOCK_SDN_ENTRIES) {
     const entryName = entry.name.toUpperCase();
@@ -86,7 +94,8 @@ export async function screenEntity(request: ScreeningRequest): Promise<Screening
             listName: "OFAC SDN",
             matchedName: entry.name,
             matchScore: score,
-            matchType: score === 1.0 ? "exact" : score >= 0.9 ? "alias" : "fuzzy",
+            matchType:
+              score === 1.0 ? "exact" : score >= 0.9 ? "alias" : "fuzzy",
             entityDetails: {
               type: entry.type,
               programs: entry.programs,
@@ -100,7 +109,8 @@ export async function screenEntity(request: ScreeningRequest): Promise<Screening
     }
   }
 
-  const maxScore = matches.length > 0 ? Math.max(...matches.map((m) => m.matchScore)) : 0;
+  const maxScore =
+    matches.length > 0 ? Math.max(...matches.map((m) => m.matchScore)) : 0;
   const status: ScreeningResult["status"] =
     maxScore >= 0.95 ? "match" : maxScore >= 0.7 ? "potential_match" : "clear";
 
@@ -113,14 +123,19 @@ export async function screenEntity(request: ScreeningRequest): Promise<Screening
     lists: ["OFAC SDN"],
   };
 
-  log.info({ entity: request.entityName, status, matchCount: matches.length }, "Screening complete");
+  log.info(
+    { entity: request.entityName, status, matchCount: matches.length },
+    "Screening complete",
+  );
   return result;
 }
 
 /**
  * Batch screen multiple entities.
  */
-export async function batchScreen(requests: ScreeningRequest[]): Promise<ScreeningResult[]> {
+export async function batchScreen(
+  requests: ScreeningRequest[],
+): Promise<ScreeningResult[]> {
   return Promise.all(requests.map(screenEntity));
 }
 

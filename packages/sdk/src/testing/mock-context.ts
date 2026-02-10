@@ -1,4 +1,8 @@
-import { createLogger, generateRunId, generateAgentId } from "@beacon-os/common";
+import {
+  createLogger,
+  generateRunId,
+  generateAgentId,
+} from "@beacon-os/common";
 import type {
   AgentContext,
   ModelProxy,
@@ -17,7 +21,9 @@ export interface MockContextOptions {
   approvalResult?: { approved: boolean; note?: string };
 }
 
-export function createMockContext(options: MockContextOptions = {}): AgentContext & {
+export function createMockContext(
+  options: MockContextOptions = {},
+): AgentContext & {
   getEvents(): { event: string; data?: Record<string, unknown> }[];
   getModelCalls(): unknown[];
   getToolCalls(): { name: string; input: Record<string, unknown> }[];
@@ -77,7 +83,12 @@ export function createMockContext(options: MockContextOptions = {}): AgentContex
 
   const hitlProxy: HitlProxy = {
     async requestApproval() {
-      return options.approvalResult ?? { approved: true, note: "Auto-approved in test" };
+      return (
+        options.approvalResult ?? {
+          approved: true,
+          note: "Auto-approved in test",
+        }
+      );
     },
   };
 

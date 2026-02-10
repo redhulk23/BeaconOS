@@ -16,8 +16,12 @@ export const tenants = pgTable("tenants", {
   name: text("name").notNull(),
   slug: varchar("slug", { length: 63 }).notNull().unique(),
   settings: jsonb("settings").default({}).$type<Record<string, unknown>>(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 // --- Users ---
@@ -31,8 +35,12 @@ export const users = pgTable(
     email: varchar("email", { length: 255 }).notNull(),
     name: text("name").notNull(),
     passwordHash: text("password_hash"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("users_tenant_id_idx").on(t.tenantId),
@@ -52,7 +60,9 @@ export const userRoles = pgTable(
       .notNull()
       .references(() => tenants.id),
     role: varchar("role", { length: 50 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [index("user_roles_user_id_idx").on(t.userId)],
 );
@@ -75,7 +85,9 @@ export const apiKeys = pgTable(
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("api_keys_tenant_id_idx").on(t.tenantId),
@@ -97,8 +109,12 @@ export const agentDefinitions = pgTable(
     manifest: jsonb("manifest").notNull().$type<Record<string, unknown>>(),
     status: varchar("status", { length: 20 }).notNull().default("registered"),
     createdBy: text("created_by").references(() => users.id),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("agent_definitions_tenant_id_idx").on(t.tenantId),
@@ -127,7 +143,9 @@ export const agentRuns = pgTable(
     triggeredBy: text("triggered_by"),
     startedAt: timestamp("started_at", { withTimezone: true }),
     completedAt: timestamp("completed_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("agent_runs_tenant_id_idx").on(t.tenantId),
@@ -154,7 +172,9 @@ export const agentRunSteps = pgTable(
     error: text("error"),
     tokensUsed: integer("tokens_used").default(0),
     durationMs: integer("duration_ms"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("agent_run_steps_run_id_idx").on(t.runId),
@@ -176,8 +196,12 @@ export const workflowDefinitions = pgTable(
     definition: jsonb("definition").notNull().$type<Record<string, unknown>>(),
     status: varchar("status", { length: 20 }).notNull().default("active"),
     createdBy: text("created_by").references(() => users.id),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [index("workflow_definitions_tenant_id_idx").on(t.tenantId)],
 );
@@ -201,7 +225,9 @@ export const workflowRuns = pgTable(
     error: text("error"),
     startedAt: timestamp("started_at", { withTimezone: true }),
     completedAt: timestamp("completed_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("workflow_runs_tenant_id_idx").on(t.tenantId),
@@ -220,12 +246,18 @@ export const toolRegistrations = pgTable(
     name: text("name").notNull(),
     version: varchar("version", { length: 20 }).notNull().default("0.1.0"),
     description: text("description"),
-    inputSchema: jsonb("input_schema").notNull().$type<Record<string, unknown>>(),
+    inputSchema: jsonb("input_schema")
+      .notNull()
+      .$type<Record<string, unknown>>(),
     outputSchema: jsonb("output_schema").$type<Record<string, unknown>>(),
     permissions: jsonb("permissions").default([]).$type<string[]>(),
     timeoutMs: integer("timeout_ms").default(30000),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("tool_registrations_tenant_id_idx").on(t.tenantId),
@@ -249,7 +281,9 @@ export const auditLogs = pgTable(
     metadata: jsonb("metadata").default({}).$type<Record<string, unknown>>(),
     previousHash: text("previous_hash"),
     hash: text("hash").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("audit_logs_tenant_id_idx").on(t.tenantId),
@@ -273,8 +307,12 @@ export const memoryEntries = pgTable(
     key: text("key").notNull(),
     value: jsonb("value").notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("memory_entries_agent_id_idx").on(t.agentId),
@@ -302,7 +340,9 @@ export const approvalRequests = pgTable(
     decision: varchar("decision", { length: 20 }),
     decisionNote: text("decision_note"),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("approval_requests_tenant_id_idx").on(t.tenantId),
@@ -322,8 +362,12 @@ export const tenantSettings = pgTable(
     key: varchar("key", { length: 100 }).notNull(),
     value: jsonb("value").notNull().$type<Record<string, unknown>>(),
     category: varchar("category", { length: 50 }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("tenant_settings_tenant_id_idx").on(t.tenantId),
@@ -341,16 +385,33 @@ export const abacPolicies = pgTable(
       .references(() => tenants.id),
     name: text("name").notNull(),
     description: text("description"),
-    effect: varchar("effect", { length: 10 }).notNull().$type<"allow" | "deny">(),
-    subjectAttributes: jsonb("subject_attributes").default({}).$type<Record<string, unknown>>(),
-    resourceAttributes: jsonb("resource_attributes").default({}).$type<Record<string, unknown>>(),
-    actionAttributes: jsonb("action_attributes").default({}).$type<Record<string, unknown>>(),
-    conditions: jsonb("conditions").default([]).$type<Record<string, unknown>[]>(),
+    effect: varchar("effect", { length: 10 })
+      .notNull()
+      .$type<"allow" | "deny">(),
+    subjectAttributes: jsonb("subject_attributes")
+      .default({})
+      .$type<Record<string, unknown>>(),
+    resourceAttributes: jsonb("resource_attributes")
+      .default({})
+      .$type<Record<string, unknown>>(),
+    actionAttributes: jsonb("action_attributes")
+      .default({})
+      .$type<Record<string, unknown>>(),
+    conditions: jsonb("conditions")
+      .default([])
+      .$type<Record<string, unknown>[]>(),
     priority: integer("priority").notNull().default(0),
-    status: varchar("status", { length: 20 }).notNull().default("active").$type<"active" | "inactive">(),
+    status: varchar("status", { length: 20 })
+      .notNull()
+      .default("active")
+      .$type<"active" | "inactive">(),
     createdBy: text("created_by").references(() => users.id),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("abac_policies_tenant_id_idx").on(t.tenantId),
@@ -376,11 +437,15 @@ export const telemetrySpans = pgTable(
     startTime: timestamp("start_time", { withTimezone: true }).notNull(),
     endTime: timestamp("end_time", { withTimezone: true }),
     durationMs: numeric("duration_ms", { precision: 12, scale: 2 }),
-    attributes: jsonb("attributes").default({}).$type<Record<string, unknown>>(),
+    attributes: jsonb("attributes")
+      .default({})
+      .$type<Record<string, unknown>>(),
     events: jsonb("events").default([]).$type<Record<string, unknown>[]>(),
     agentId: text("agent_id"),
     runId: text("run_id"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (t) => [
     index("telemetry_spans_tenant_id_idx").on(t.tenantId),

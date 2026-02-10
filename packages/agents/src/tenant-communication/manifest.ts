@@ -4,7 +4,8 @@ export const TENANT_COMMUNICATION_MANIFEST = {
   metadata: {
     name: "tenant-communication",
     version: "0.1.0",
-    description: "Manages tenant communications including inquiry classification, response generation, delinquency workflows, and renewal outreach",
+    description:
+      "Manages tenant communications including inquiry classification, response generation, delinquency workflows, and renewal outreach",
     tags: ["cre", "tenant", "communication", "compliance"],
   },
   spec: {
@@ -29,11 +30,7 @@ export const TENANT_COMMUNICATION_MANIFEST = {
       maxTokensPerRun: 150_000,
       timeoutMs: 300_000,
     },
-    permissions: [
-      "agents:run",
-      "tools:execute",
-      "approvals:read",
-    ],
+    permissions: ["agents:run", "tools:execute", "approvals:read"],
     guardrails: {
       piiRedaction: true,
       fairHousing: true,
@@ -46,7 +43,8 @@ export const TENANT_COMMUNICATION_MANIFEST = {
 export const TENANT_COMMUNICATION_WORKFLOW = {
   name: "tenant-communication-workflow",
   version: "0.1.0",
-  description: "Human-in-the-loop workflow for tenant communication with compliance review",
+  description:
+    "Human-in-the-loop workflow for tenant communication with compliance review",
   pattern: "human-in-the-loop",
   steps: [
     {
@@ -67,7 +65,8 @@ export const TENANT_COMMUNICATION_WORKFLOW = {
       name: "review-response",
       type: "approval" as const,
       title: "Review Tenant Communication",
-      description: "Review generated tenant communication for accuracy and compliance before sending",
+      description:
+        "Review generated tenant communication for accuracy and compliance before sending",
     },
   ],
   config: {

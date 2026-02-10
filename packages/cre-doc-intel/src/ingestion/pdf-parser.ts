@@ -31,6 +31,7 @@ export async function parsePdf(buffer: Buffer): Promise<ParsedPdf> {
 
 export function isPdfScanned(parsedPdf: ParsedPdf): boolean {
   // If very little text relative to pages, likely scanned
-  const avgCharsPerPage = parsedPdf.text.length / Math.max(1, parsedPdf.pageCount);
+  const avgCharsPerPage =
+    parsedPdf.text.length / Math.max(1, parsedPdf.pageCount);
   return avgCharsPerPage < 100;
 }

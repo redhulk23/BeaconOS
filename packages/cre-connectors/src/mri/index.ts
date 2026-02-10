@@ -114,11 +114,16 @@ const MOCK_LEASES: MriLease[] = [
 
 // --- MCP Tool Functions ---
 
-export async function mriReadPortfolio(input: { portfolioId?: string }): Promise<MriPortfolio> {
+export async function mriReadPortfolio(input: {
+  portfolioId?: string;
+}): Promise<MriPortfolio> {
   log.info(input, "Reading portfolio from MRI");
 
   const totalUnits = MOCK_PROPERTIES.reduce((sum, p) => sum + p.unitCount, 0);
-  const totalArea = MOCK_PROPERTIES.reduce((sum, p) => sum + (p.grossArea ?? 0), 0);
+  const totalArea = MOCK_PROPERTIES.reduce(
+    (sum, p) => sum + (p.grossArea ?? 0),
+    0,
+  );
 
   return {
     portfolioId: input.portfolioId ?? "DEFAULT",
@@ -130,7 +135,10 @@ export async function mriReadPortfolio(input: { portfolioId?: string }): Promise
   };
 }
 
-export async function mriReadLease(input: { leaseNumber?: string; entityId?: string }): Promise<MriLease[]> {
+export async function mriReadLease(input: {
+  leaseNumber?: string;
+  entityId?: string;
+}): Promise<MriLease[]> {
   log.info(input, "Reading lease(s) from MRI");
 
   if (input.leaseNumber) {
@@ -151,13 +159,19 @@ export async function mriWriteLease(input: {
   expirationDate: string;
   baseRent: number;
 }): Promise<{ leaseNumber: string; status: string }> {
-  log.info({ entityId: input.entityId, spaceId: input.spaceId }, "Writing lease to MRI");
+  log.info(
+    { entityId: input.entityId, spaceId: input.spaceId },
+    "Writing lease to MRI",
+  );
 
   const leaseNumber = `MRI-L${String(Date.now()).slice(-6)}`;
   return { leaseNumber, status: "created" };
 }
 
-export async function mriGetAsc842(input: { leaseNumber: string; discountRate?: number }): Promise<MriAsc842> {
+export async function mriGetAsc842(input: {
+  leaseNumber: string;
+  discountRate?: number;
+}): Promise<MriAsc842> {
   log.info(input, "Calculating ASC 842 from MRI");
 
   const lease = MOCK_LEASES.find((l) => l.leaseNumber === input.leaseNumber);
@@ -166,11 +180,15 @@ export async function mriGetAsc842(input: { leaseNumber: string; discountRate?: 
   const rate = input.discountRate ?? 0.05;
   const startDate = new Date(lease.commencementDate);
   const endDate = new Date(lease.expirationDate);
-  const remainingMonths = Math.max(0, Math.round((endDate.getTime() - Date.now()) / (30.44 * 24 * 3600 * 1000)));
+  const remainingMonths = Math.max(
+    0,
+    Math.round((endDate.getTime() - Date.now()) / (30.44 * 24 * 3600 * 1000)),
+  );
   const monthlyRate = rate / 12;
-  const pvFactor = monthlyRate > 0
-    ? (1 - Math.pow(1 + monthlyRate, -remainingMonths)) / monthlyRate
-    : remainingMonths;
+  const pvFactor =
+    monthlyRate > 0
+      ? (1 - Math.pow(1 + monthlyRate, -remainingMonths)) / monthlyRate
+      : remainingMonths;
   const liability = lease.baseRent * pvFactor;
 
   return {
@@ -189,14 +207,25 @@ export async function mriGetAsc842(input: { leaseNumber: string; discountRate?: 
 export const mriTools = [
   {
     name: "mri_read_portfolio",
-    description: "Read portfolio summary from MRI Software including all properties",
-    inputSchema: { type: "object", properties: { portfolioId: { type: "string" } } },
+    description:
+      "Read portfolio summary from MRI Software including all properties",
+    inputSchema: {
+      type: "object",
+      properties: { portfolioId: { type: "string" } },
+    },
     execute: mriReadPortfolio,
   },
   {
     name: "mri_read_lease",
-    description: "Read lease details from MRI Software by lease number or entity ID",
-    inputSchema: { type: "object", properties: { leaseNumber: { type: "string" }, entityId: { type: "string" } } },
+    description:
+      "Read lease details from MRI Software by lease number or entity ID",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leaseNumber: { type: "string" },
+        entityId: { type: "string" },
+      },
+    },
     execute: mriReadLease,
   },
   {
@@ -212,7 +241,14 @@ export const mriTools = [
         expirationDate: { type: "string" },
         baseRent: { type: "number" },
       },
-      required: ["entityId", "spaceId", "tenantName", "commencementDate", "expirationDate", "baseRent"],
+      required: [
+        "entityId",
+        "spaceId",
+        "tenantName",
+        "commencementDate",
+        "expirationDate",
+        "baseRent",
+      ],
     },
     execute: mriWriteLease,
   },
@@ -221,7 +257,10 @@ export const mriTools = [
     description: "Calculate ASC 842 lease accounting data from MRI Software",
     inputSchema: {
       type: "object",
-      properties: { leaseNumber: { type: "string" }, discountRate: { type: "number" } },
+      properties: {
+        leaseNumber: { type: "string" },
+        discountRate: { type: "number" },
+      },
       required: ["leaseNumber"],
     },
     execute: mriGetAsc842,

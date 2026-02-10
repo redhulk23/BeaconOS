@@ -68,11 +68,16 @@ export function createAgentContext(
 
   const toolProxy: ToolProxy = {
     async invoke(toolName, input) {
-      const result = await deps.toolExecutor.execute(tenantId, toolName, input, {
-        agentId,
-        runId,
-        agentPermissions: manifest.spec.permissions,
-      });
+      const result = await deps.toolExecutor.execute(
+        tenantId,
+        toolName,
+        input,
+        {
+          agentId,
+          runId,
+          agentPermissions: manifest.spec.permissions,
+        },
+      );
       if (!result.success) {
         throw new Error(result.error ?? "Tool execution failed");
       }
@@ -98,7 +103,10 @@ export function createAgentContext(
   const hitlProxy: HitlProxy = {
     async requestApproval(request) {
       // HITL placeholder — full implementation in Sprint 4 with orchestrator
-      log.info({ title: request.title }, "HITL approval requested (placeholder)");
+      log.info(
+        { title: request.title },
+        "HITL approval requested (placeholder)",
+      );
       return { approved: true, note: "Auto-approved (HITL not yet connected)" };
     },
   };

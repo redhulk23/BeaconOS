@@ -1,8 +1,4 @@
-import {
-  createLogger,
-  generateId,
-  type WorkflowId,
-} from "@beacon-os/common";
+import { createLogger, generateId, type WorkflowId } from "@beacon-os/common";
 import { getDb, workflowDefinitions, workflowRuns } from "@beacon-os/db";
 import { eq, and } from "drizzle-orm";
 import { getAuditLogger } from "@beacon-os/audit";
@@ -26,8 +22,14 @@ import { runBlackboard } from "./patterns/blackboard.js";
 const log = createLogger("orchestrator:engine");
 
 export interface OrchestrationDeps {
-  executeAgent: (agentId: string, input: Record<string, unknown>) => Promise<unknown>;
-  executeTool: (toolName: string, input: Record<string, unknown>) => Promise<unknown>;
+  executeAgent: (
+    agentId: string,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>;
+  executeTool: (
+    toolName: string,
+    input: Record<string, unknown>,
+  ) => Promise<unknown>;
   requestApproval: (request: {
     title: string;
     description?: string;
@@ -137,35 +139,69 @@ export class OrchestrationEngine {
 
         case "human-in-the-loop":
         case "hitl": {
-          const approvalIdx = definition.steps.findIndex((s) => s.type === "approval");
-          const preSteps = approvalIdx >= 0 ? definition.steps.slice(0, approvalIdx) : definition.steps;
-          const postSteps = approvalIdx >= 0 ? definition.steps.slice(approvalIdx + 1) : [];
+          const approvalIdx = definition.steps.findIndex(
+            (s) => s.type === "approval",
+          );
+          const preSteps =
+            approvalIdx >= 0
+              ? definition.steps.slice(0, approvalIdx)
+              : definition.steps;
+          const postSteps =
+            approvalIdx >= 0 ? definition.steps.slice(approvalIdx + 1) : [];
           const approvalConfig = {
             title: definition.name,
-            ...(definition.config as { title?: string; description?: string; timeoutMs?: number } ?? {}),
+            ...((definition.config as {
+              title?: string;
+              description?: string;
+              timeoutMs?: number;
+            }) ?? {}),
           };
-          finalState = await runHumanInTheLoop(preSteps, approvalConfig, postSteps, ctx, runId);
+          finalState = await runHumanInTheLoop(
+            preSteps,
+            approvalConfig,
+            postSteps,
+            ctx,
+            runId,
+          );
           break;
         }
 
         case "coordinator": {
           const [coordinator, ...rest] = definition.steps;
           const synthesizer = rest.pop()!;
-          finalState = await runCoordinator(coordinator!, rest, synthesizer, ctx, runId);
+          finalState = await runCoordinator(
+            coordinator!,
+            rest,
+            synthesizer,
+            ctx,
+            runId,
+          );
           break;
         }
 
         case "hierarchical": {
           const [manager, ...rest2] = definition.steps;
           const reviewer = rest2.pop()!;
-          finalState = await runHierarchical(manager!, rest2, reviewer, ctx, runId);
+          finalState = await runHierarchical(
+            manager!,
+            rest2,
+            reviewer,
+            ctx,
+            runId,
+          );
           break;
         }
 
         case "consensus": {
           const judge = definition.steps[definition.steps.length - 1]!;
           const voters = definition.steps.slice(0, -1);
-          finalState = await runConsensus(voters, judge, ctx, runId, definition.config as Record<string, unknown>);
+          finalState = await runConsensus(
+            voters,
+            judge,
+            ctx,
+            runId,
+            definition.config as Record<string, unknown>,
+          );
           break;
         }
 
@@ -173,12 +209,23 @@ export class OrchestrationEngine {
         case "iterative_refinement": {
           const generator = definition.steps[0]!;
           const evaluator = definition.steps[1]!;
-          finalState = await runIterativeRefinement(generator, evaluator, ctx, runId, definition.config as Record<string, unknown>);
+          finalState = await runIterativeRefinement(
+            generator,
+            evaluator,
+            ctx,
+            runId,
+            definition.config as Record<string, unknown>,
+          );
           break;
         }
 
         case "blackboard": {
-          finalState = await runBlackboard(definition.steps, ctx, runId, definition.config as Record<string, unknown>);
+          finalState = await runBlackboard(
+            definition.steps,
+            ctx,
+            runId,
+            definition.config as Record<string, unknown>,
+          );
           break;
         }
 
@@ -210,7 +257,10 @@ export class OrchestrationEngine {
     const audit = getAuditLogger();
     await audit.log({
       tenantId,
-      action: finalState.status === "completed" ? "agent.run.completed" : "agent.run.failed",
+      action:
+        finalState.status === "completed"
+          ? "agent.run.completed"
+          : "agent.run.failed",
       actorId: "system",
       actorType: "system",
       resourceType: "workflow_run",
@@ -222,16 +272,24 @@ export class OrchestrationEngine {
     });
 
     log.info(
-      { runId, status: finalState.status, steps: Object.keys(finalState.stepResults).length },
+      {
+        runId,
+        status: finalState.status,
+        steps: Object.keys(finalState.stepResults).length,
+      },
       "Workflow execution finished",
     );
   }
 
   async resumeWorkflow(runId: string, tenantId: string): Promise<void> {
     const checkpoint = await loadCheckpoint(runId);
-    if (!checkpoint) throw new Error(`No checkpoint found for workflow run ${runId}`);
+    if (!checkpoint)
+      throw new Error(`No checkpoint found for workflow run ${runId}`);
 
-    log.info({ runId, step: checkpoint.currentStep }, "Resuming workflow from checkpoint");
+    log.info(
+      { runId, step: checkpoint.currentStep },
+      "Resuming workflow from checkpoint",
+    );
     // Resume logic delegates to the same pattern runner with restored state
   }
 }

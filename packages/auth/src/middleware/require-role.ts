@@ -26,7 +26,9 @@ export function requireRole(...roles: Role[]): MiddlewareHandler {
   };
 }
 
-export function requirePermission(...permissions: Permission[]): MiddlewareHandler {
+export function requirePermission(
+  ...permissions: Permission[]
+): MiddlewareHandler {
   return async (c, next) => {
     const user = c.get("user");
 
@@ -39,14 +41,18 @@ export function requirePermission(...permissions: Permission[]): MiddlewareHandl
       const keyPerms = user.permissions ?? [];
       const missing = permissions.filter((p) => !keyPerms.includes(p));
       if (missing.length > 0) {
-        throw new AuthorizationError(`Missing permissions: ${missing.join(", ")}`);
+        throw new AuthorizationError(
+          `Missing permissions: ${missing.join(", ")}`,
+        );
       }
     } else {
       // Check role-based permissions
       const role = user.role as Role;
       const missing = permissions.filter((p) => !hasPermission(role, p));
       if (missing.length > 0) {
-        throw new AuthorizationError(`Missing permissions: ${missing.join(", ")}`);
+        throw new AuthorizationError(
+          `Missing permissions: ${missing.join(", ")}`,
+        );
       }
     }
 
@@ -54,7 +60,10 @@ export function requirePermission(...permissions: Permission[]): MiddlewareHandl
   };
 }
 
-export function requireAbac(resourceType: string, action: string): MiddlewareHandler {
+export function requireAbac(
+  resourceType: string,
+  action: string,
+): MiddlewareHandler {
   return async (c, next) => {
     const user = c.get("user");
 
@@ -98,7 +107,9 @@ export function requireAbac(resourceType: string, action: string): MiddlewareHan
     const decision = evaluator.evaluate(policies, context);
 
     if (decision.result === "deny") {
-      throw new AuthorizationError(`Access denied by ABAC policy: ${decision.reason}`);
+      throw new AuthorizationError(
+        `Access denied by ABAC policy: ${decision.reason}`,
+      );
     }
 
     await next();

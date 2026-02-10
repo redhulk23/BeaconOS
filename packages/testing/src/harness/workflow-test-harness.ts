@@ -21,7 +21,9 @@ export interface WorkflowTestResult {
   durationMs: number;
 }
 
-export async function runWorkflowTest(testCase: WorkflowTestCase): Promise<WorkflowTestResult> {
+export async function runWorkflowTest(
+  testCase: WorkflowTestCase,
+): Promise<WorkflowTestResult> {
   const start = Date.now();
 
   try {

@@ -6,7 +6,8 @@ import type { AuditAction } from "@beacon-os/common";
 
 const log = createLogger("audit");
 
-const AUDIT_HMAC_SECRET = process.env.AUDIT_HMAC_SECRET ?? process.env.JWT_SECRET ?? "audit-secret";
+const AUDIT_HMAC_SECRET =
+  process.env.AUDIT_HMAC_SECRET ?? process.env.JWT_SECRET ?? "audit-secret";
 
 export interface AuditLogInput {
   tenantId: string;
@@ -79,7 +80,12 @@ export class AuditLogger {
     this.lastHash = hash;
 
     log.debug(
-      { id, action: input.action, resourceType: input.resourceType, resourceId: input.resourceId },
+      {
+        id,
+        action: input.action,
+        resourceType: input.resourceType,
+        resourceId: input.resourceId,
+      },
       "Audit event logged",
     );
 
@@ -91,9 +97,12 @@ export class AuditLogger {
     const conditions = [eq(auditLogs.tenantId, options.tenantId)];
 
     if (options.action) conditions.push(eq(auditLogs.action, options.action));
-    if (options.actorId) conditions.push(eq(auditLogs.actorId, options.actorId));
-    if (options.resourceType) conditions.push(eq(auditLogs.resourceType, options.resourceType));
-    if (options.resourceId) conditions.push(eq(auditLogs.resourceId, options.resourceId));
+    if (options.actorId)
+      conditions.push(eq(auditLogs.actorId, options.actorId));
+    if (options.resourceType)
+      conditions.push(eq(auditLogs.resourceType, options.resourceType));
+    if (options.resourceId)
+      conditions.push(eq(auditLogs.resourceId, options.resourceId));
     if (options.from) conditions.push(gte(auditLogs.createdAt, options.from));
     if (options.to) conditions.push(lte(auditLogs.createdAt, options.to));
 
@@ -127,7 +136,10 @@ export class AuditLogger {
         AUDIT_HMAC_SECRET,
       );
       if (entry.hash !== expectedHash) {
-        log.error({ id: entry.id, expected: expectedHash, actual: entry.hash }, "Audit integrity violation");
+        log.error(
+          { id: entry.id, expected: expectedHash, actual: entry.hash },
+          "Audit integrity violation",
+        );
         return false;
       }
     }

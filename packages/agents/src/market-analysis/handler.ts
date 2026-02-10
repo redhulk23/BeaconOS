@@ -27,7 +27,10 @@ export async function marketAnalysisHandler(
   }
 }
 
-async function handleSearchComps(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleSearchComps(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Searching for comparable transactions");
 
   const propertyAddress = (input.propertyAddress as string) ?? "";
@@ -61,7 +64,10 @@ Search for comps within the same submarket and adjacent submarkets. Include both
   return { comps, status: "searched" };
 }
 
-async function handleScoreComps(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleScoreComps(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Scoring comparable transactions");
 
   const comps = input.comps ?? (await ctx.memory.get("raw_comps"));
@@ -92,7 +98,10 @@ ${JSON.stringify(comps, null, 2)}`,
   return { scoredComps, status: "scored" };
 }
 
-async function handleAnalyzeSubmarket(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleAnalyzeSubmarket(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Analyzing submarket fundamentals");
 
   const city = (input.city as string) ?? "Austin";
@@ -123,11 +132,16 @@ Provide a thorough analysis of current market conditions and near-term outlook.`
   return { analysis, status: "analyzed" };
 }
 
-async function handleGenerateReport(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleGenerateReport(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Generating market analysis report");
 
-  const scoredComps = input.scoredComps ?? (await ctx.memory.get("scored_comps"));
-  const submarketAnalysis = input.submarketAnalysis ?? (await ctx.memory.get("submarket_analysis"));
+  const scoredComps =
+    input.scoredComps ?? (await ctx.memory.get("scored_comps"));
+  const submarketAnalysis =
+    input.submarketAnalysis ?? (await ctx.memory.get("submarket_analysis"));
   const propertyAddress = (input.propertyAddress as string) ?? "";
   const city = (input.city as string) ?? "Austin";
   const state = (input.state as string) ?? "TX";

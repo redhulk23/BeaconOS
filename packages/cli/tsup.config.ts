@@ -7,5 +7,12 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   banner: { js: "#!/usr/bin/env node" },
-  external: [/^@beacon-os\//, /^commander$/, /^inquirer/, /^chalk$/, /^ora$/, /^yaml$/],
+  external: [
+    /^@beacon-os\//,
+    /^commander$/,
+    /^inquirer/,
+    /^chalk$/,
+    /^ora$/,
+    /^yaml$/,
+  ],
 });

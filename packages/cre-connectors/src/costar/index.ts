@@ -12,7 +12,14 @@ export const CoStarPropertySchema = z.object({
   city: z.string(),
   state: z.string(),
   zip: z.string(),
-  propertyType: z.enum(["office", "industrial", "retail", "multifamily", "hospitality", "land"]),
+  propertyType: z.enum([
+    "office",
+    "industrial",
+    "retail",
+    "multifamily",
+    "hospitality",
+    "land",
+  ]),
   subType: z.string().optional(),
   buildingSqFt: z.number(),
   yearBuilt: z.number(),
@@ -171,7 +178,7 @@ const MOCK_MARKET_DATA: CoStarMarketData[] = [
     propertyType: "office",
     period: "2024-Q4",
     vacancyRate: 0.142,
-    askingRentPerSqFt: 52.50,
+    askingRentPerSqFt: 52.5,
     effectiveRentPerSqFt: 48.75,
     absorptionSqFt: 125000,
     deliveriesSqFt: 200000,
@@ -186,7 +193,7 @@ const MOCK_MARKET_DATA: CoStarMarketData[] = [
     period: "2024-Q4",
     vacancyRate: 0.068,
     askingRentPerSqFt: 8.25,
-    effectiveRentPerSqFt: 7.90,
+    effectiveRentPerSqFt: 7.9,
     absorptionSqFt: 2500000,
     deliveriesSqFt: 3200000,
     underConstructionSqFt: 4100000,
@@ -207,11 +214,20 @@ export async function costarSearchProperties(input: {
   log.info(input, "Searching properties on CoStar");
 
   let results = [...MOCK_PROPERTIES];
-  if (input.city) results = results.filter((p) => p.city.toLowerCase() === input.city!.toLowerCase());
-  if (input.state) results = results.filter((p) => p.state.toLowerCase() === input.state!.toLowerCase());
-  if (input.propertyType) results = results.filter((p) => p.propertyType === input.propertyType);
-  if (input.minSqFt) results = results.filter((p) => p.buildingSqFt >= input.minSqFt!);
-  if (input.maxSqFt) results = results.filter((p) => p.buildingSqFt <= input.maxSqFt!);
+  if (input.city)
+    results = results.filter(
+      (p) => p.city.toLowerCase() === input.city!.toLowerCase(),
+    );
+  if (input.state)
+    results = results.filter(
+      (p) => p.state.toLowerCase() === input.state!.toLowerCase(),
+    );
+  if (input.propertyType)
+    results = results.filter((p) => p.propertyType === input.propertyType);
+  if (input.minSqFt)
+    results = results.filter((p) => p.buildingSqFt >= input.minSqFt!);
+  if (input.maxSqFt)
+    results = results.filter((p) => p.buildingSqFt <= input.maxSqFt!);
 
   return results;
 }
@@ -226,11 +242,20 @@ export async function costarGetComps(input: {
   log.info(input, "Getting comps from CoStar");
 
   let results = [...MOCK_COMPS];
-  if (input.city) results = results.filter((c) => c.city.toLowerCase() === input.city!.toLowerCase());
-  if (input.state) results = results.filter((c) => c.state.toLowerCase() === input.state!.toLowerCase());
-  if (input.propertyType) results = results.filter((c) => c.propertyType === input.propertyType);
-  if (input.minSalePrice) results = results.filter((c) => c.salePrice >= input.minSalePrice!);
-  if (input.maxSalePrice) results = results.filter((c) => c.salePrice <= input.maxSalePrice!);
+  if (input.city)
+    results = results.filter(
+      (c) => c.city.toLowerCase() === input.city!.toLowerCase(),
+    );
+  if (input.state)
+    results = results.filter(
+      (c) => c.state.toLowerCase() === input.state!.toLowerCase(),
+    );
+  if (input.propertyType)
+    results = results.filter((c) => c.propertyType === input.propertyType);
+  if (input.minSalePrice)
+    results = results.filter((c) => c.salePrice >= input.minSalePrice!);
+  if (input.maxSalePrice)
+    results = results.filter((c) => c.salePrice <= input.maxSalePrice!);
 
   return results;
 }
@@ -243,8 +268,11 @@ export async function costarMarketData(input: {
   log.info(input, "Getting market data from CoStar");
 
   let results = [...MOCK_MARKET_DATA];
-  results = results.filter((m) => m.market.toLowerCase() === input.market.toLowerCase());
-  if (input.propertyType) results = results.filter((m) => m.propertyType === input.propertyType);
+  results = results.filter(
+    (m) => m.market.toLowerCase() === input.market.toLowerCase(),
+  );
+  if (input.propertyType)
+    results = results.filter((m) => m.propertyType === input.propertyType);
   if (input.period) results = results.filter((m) => m.period === input.period);
 
   return results;
@@ -255,13 +283,24 @@ export async function costarMarketData(input: {
 export const costarTools = [
   {
     name: "costar_search_properties",
-    description: "Search for commercial real estate properties on CoStar (read-only)",
+    description:
+      "Search for commercial real estate properties on CoStar (read-only)",
     inputSchema: {
       type: "object",
       properties: {
         city: { type: "string" },
         state: { type: "string" },
-        propertyType: { type: "string", enum: ["office", "industrial", "retail", "multifamily", "hospitality", "land"] },
+        propertyType: {
+          type: "string",
+          enum: [
+            "office",
+            "industrial",
+            "retail",
+            "multifamily",
+            "hospitality",
+            "land",
+          ],
+        },
         minSqFt: { type: "number" },
         maxSqFt: { type: "number" },
       },
@@ -285,7 +324,8 @@ export const costarTools = [
   },
   {
     name: "costar_market_data",
-    description: "Get market analytics data from CoStar (vacancy, rents, absorption, etc.)",
+    description:
+      "Get market analytics data from CoStar (vacancy, rents, absorption, etc.)",
     inputSchema: {
       type: "object",
       properties: {

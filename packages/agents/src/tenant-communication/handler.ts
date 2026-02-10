@@ -26,7 +26,10 @@ export async function tenantCommunicationHandler(
   }
 }
 
-async function handleClassify(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleClassify(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Classifying tenant inquiry");
 
   const inquiry = input.inquiry as string | undefined;
@@ -36,7 +39,10 @@ async function handleClassify(ctx: AgentContext, input: Record<string, unknown>)
 
   const response = await ctx.model.complete([
     { role: "system", content: TENANT_COMMUNICATION_SYSTEM_PROMPT },
-    { role: "user", content: `${CLASSIFY_INQUIRY_PROMPT}\n\nTenant inquiry:\n${inquiry}` },
+    {
+      role: "user",
+      content: `${CLASSIFY_INQUIRY_PROMPT}\n\nTenant inquiry:\n${inquiry}`,
+    },
   ]);
 
   const classification = response.content;
@@ -46,11 +52,15 @@ async function handleClassify(ctx: AgentContext, input: Record<string, unknown>)
   return { classification, status: "classified" };
 }
 
-async function handleRespond(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleRespond(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Generating tenant response");
 
   const inquiry = input.inquiry as string | undefined;
-  const classification = input.classification ?? (await ctx.memory.get("current_classification"));
+  const classification =
+    input.classification ?? (await ctx.memory.get("current_classification"));
   const tenantName = (input.tenantName as string) ?? "Tenant";
   const propertyName = (input.propertyName as string) ?? "the property";
 
@@ -79,7 +89,10 @@ Requirements:
   return { response: response.content, status: "drafted" };
 }
 
-async function handleDelinquency(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleDelinquency(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Generating delinquency communication");
 
   const tenantName = (input.tenantName as string) ?? "Tenant";
@@ -123,7 +136,10 @@ Details:
   };
 }
 
-async function handleRenewal(ctx: AgentContext, input: Record<string, unknown>) {
+async function handleRenewal(
+  ctx: AgentContext,
+  input: Record<string, unknown>,
+) {
   ctx.log.info("Generating renewal outreach");
 
   const tenantName = (input.tenantName as string) ?? "Tenant";

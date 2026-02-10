@@ -7,7 +7,12 @@ import {
   type AgentId,
   type TenantId,
 } from "@beacon-os/common";
-import { getDb, agentDefinitions, agentRuns, agentRunSteps } from "@beacon-os/db";
+import {
+  getDb,
+  agentDefinitions,
+  agentRuns,
+  agentRunSteps,
+} from "@beacon-os/db";
 import { requirePermission, Permission } from "@beacon-os/auth";
 import { ProcessManager } from "@beacon-os/kernel";
 import { ModelRouter } from "@beacon-os/model-router";
@@ -23,7 +28,11 @@ function getProcessManager(): ProcessManager {
     const modelRouter = new ModelRouter();
     const memoryManager = new MemoryManager();
     const resourceManager = new ResourceManager();
-    _processManager = new ProcessManager(modelRouter, memoryManager, resourceManager);
+    _processManager = new ProcessManager(
+      modelRouter,
+      memoryManager,
+      resourceManager,
+    );
   }
   return _processManager;
 }

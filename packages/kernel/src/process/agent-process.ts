@@ -39,7 +39,12 @@ export interface StepRecord {
   durationMs: number;
 }
 
-export type ProcessStatus = "idle" | "running" | "suspended" | "completed" | "failed";
+export type ProcessStatus =
+  | "idle"
+  | "running"
+  | "suspended"
+  | "completed"
+  | "failed";
 
 export class AgentProcess {
   readonly config: AgentProcessConfig;
@@ -181,14 +186,16 @@ export class AgentProcess {
         });
 
         // Check if done (no tool calls)
-        if (response.finishReason === "end_turn" || !response.toolCalls?.length) {
+        if (
+          response.finishReason === "end_turn" ||
+          !response.toolCalls?.length
+        ) {
           this.status = "completed";
 
           // Save to memory
-          await this.memoryManager.setWorkingMemory(
-            this.config.agentId,
-            { lastOutput: response.content },
-          );
+          await this.memoryManager.setWorkingMemory(this.config.agentId, {
+            lastOutput: response.content,
+          });
 
           return {
             status: "completed",
@@ -240,7 +247,10 @@ export class AgentProcess {
     } catch (error) {
       this.status = "failed";
       const message = error instanceof Error ? error.message : String(error);
-      log.error({ runId: this.config.runId, error: message }, "Agent process failed");
+      log.error(
+        { runId: this.config.runId, error: message },
+        "Agent process failed",
+      );
 
       const errorStep: StepRecord = {
         id: generateStepId(),

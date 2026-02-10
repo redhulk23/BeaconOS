@@ -48,9 +48,13 @@ export async function runConsensus(
   ctx.state.currentStep = judgeStep.id;
   await saveCheckpoint(workflowRunId, ctx.state);
   const judgeResult = await executeStep(judgeStep, ctx);
-  ctx.state.stepResults[judgeStep.id] = { status: judgeResult.status, output: judgeResult.output };
+  ctx.state.stepResults[judgeStep.id] = {
+    status: judgeResult.status,
+    output: judgeResult.output,
+  };
 
-  ctx.state.status = judgeResult.status === "completed" ? "completed" : "failed";
+  ctx.state.status =
+    judgeResult.status === "completed" ? "completed" : "failed";
   ctx.state.completedAt = new Date();
   ctx.state.currentStep = null;
   await saveCheckpoint(workflowRunId, ctx.state);

@@ -4,7 +4,8 @@ export const DEAL_SOURCING_MANIFEST = {
   metadata: {
     name: "deal-sourcing",
     version: "0.1.0",
-    description: "Screens potential CRE acquisitions against investment criteria with AML/KYC compliance",
+    description:
+      "Screens potential CRE acquisitions against investment criteria with AML/KYC compliance",
     tags: ["cre", "deal-sourcing", "acquisitions", "compliance"],
   },
   spec: {
@@ -29,10 +30,7 @@ export const DEAL_SOURCING_MANIFEST = {
       maxTokensPerRun: 250_000,
       timeoutMs: 600_000,
     },
-    permissions: [
-      "agents:run",
-      "tools:execute",
-    ],
+    permissions: ["agents:run", "tools:execute"],
     guardrails: {
       piiRedaction: true,
       fairHousing: true,

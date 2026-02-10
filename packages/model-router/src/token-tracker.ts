@@ -49,8 +49,7 @@ export class TokenTracker {
 
     for (let i = 0; i < windowCount; i++) {
       const window =
-        Math.floor(now / WINDOW_SECONDS) * WINDOW_SECONDS -
-        i * WINDOW_SECONDS;
+        Math.floor(now / WINDOW_SECONDS) * WINDOW_SECONDS - i * WINDOW_SECONDS;
       const key = `${KEY_PREFIX}:tenant:${tenantId}:${window}`;
       const val = await redis.get(key);
       if (val) total += parseInt(val, 10);
@@ -70,8 +69,7 @@ export class TokenTracker {
 
     for (let i = 0; i < windowCount; i++) {
       const window =
-        Math.floor(now / WINDOW_SECONDS) * WINDOW_SECONDS -
-        i * WINDOW_SECONDS;
+        Math.floor(now / WINDOW_SECONDS) * WINDOW_SECONDS - i * WINDOW_SECONDS;
       const key = `${KEY_PREFIX}:detail:${agentId}:${window}`;
       const data = await redis.hgetall(key);
       if (data.input) input += parseInt(data.input, 10);

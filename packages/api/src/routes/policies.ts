@@ -1,7 +1,11 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
-import { NotFoundError, ValidationError, generatePolicyId } from "@beacon-os/common";
+import {
+  NotFoundError,
+  ValidationError,
+  generatePolicyId,
+} from "@beacon-os/common";
 import { getDb, abacPolicies } from "@beacon-os/db";
 import { getAuditLogger } from "@beacon-os/audit";
 import { requirePermission, Permission } from "@beacon-os/auth";
@@ -48,7 +52,9 @@ policies.post("/", requirePermission(Permission.POLICIES_MANAGE), async (c) => {
   const parsed = CreatePolicySchema.safeParse(body);
 
   if (!parsed.success) {
-    throw new ValidationError("Invalid policy definition", { issues: parsed.error.issues });
+    throw new ValidationError("Invalid policy definition", {
+      issues: parsed.error.issues,
+    });
   }
 
   const data = parsed.data;
@@ -63,9 +69,18 @@ policies.post("/", requirePermission(Permission.POLICIES_MANAGE), async (c) => {
     name: data.name,
     description: data.description,
     effect: data.effect,
-    subjectAttributes: data.subjectAttributes as unknown as Record<string, unknown>,
-    resourceAttributes: data.resourceAttributes as unknown as Record<string, unknown>,
-    actionAttributes: data.actionAttributes as unknown as Record<string, unknown>,
+    subjectAttributes: data.subjectAttributes as unknown as Record<
+      string,
+      unknown
+    >,
+    resourceAttributes: data.resourceAttributes as unknown as Record<
+      string,
+      unknown
+    >,
+    actionAttributes: data.actionAttributes as unknown as Record<
+      string,
+      unknown
+    >,
     conditions: data.conditions as unknown as Record<string, unknown>[],
     priority: data.priority,
     status: "active",
@@ -125,95 +140,108 @@ policies.get("/:id", requirePermission(Permission.POLICIES_READ), async (c) => {
 });
 
 // PATCH /api/v1/policies/:id — Update policy
-policies.patch("/:id", requirePermission(Permission.POLICIES_MANAGE), async (c) => {
-  const tenantId = c.get("tenantId");
-  const id = c.req.param("id");
-  const body = await c.req.json();
-  const parsed = UpdatePolicySchema.safeParse(body);
+policies.patch(
+  "/:id",
+  requirePermission(Permission.POLICIES_MANAGE),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    const parsed = UpdatePolicySchema.safeParse(body);
 
-  if (!parsed.success) {
-    throw new ValidationError("Invalid update", { issues: parsed.error.issues });
-  }
+    if (!parsed.success) {
+      throw new ValidationError("Invalid update", {
+        issues: parsed.error.issues,
+      });
+    }
 
-  const db = getDb();
-  const existing = await db
-    .select()
-    .from(abacPolicies)
-    .where(and(eq(abacPolicies.id, id), eq(abacPolicies.tenantId, tenantId)))
-    .then((rows) => rows[0]);
+    const db = getDb();
+    const existing = await db
+      .select()
+      .from(abacPolicies)
+      .where(and(eq(abacPolicies.id, id), eq(abacPolicies.tenantId, tenantId)))
+      .then((rows) => rows[0]);
 
-  if (!existing) {
-    throw new NotFoundError("Policy", id);
-  }
+    if (!existing) {
+      throw new NotFoundError("Policy", id);
+    }
 
-  const updates: Record<string, unknown> = { updatedAt: new Date() };
-  if (parsed.data.name !== undefined) updates.name = parsed.data.name;
-  if (parsed.data.description !== undefined) updates.description = parsed.data.description;
-  if (parsed.data.effect !== undefined) updates.effect = parsed.data.effect;
-  if (parsed.data.subjectAttributes !== undefined) updates.subjectAttributes = parsed.data.subjectAttributes;
-  if (parsed.data.resourceAttributes !== undefined) updates.resourceAttributes = parsed.data.resourceAttributes;
-  if (parsed.data.actionAttributes !== undefined) updates.actionAttributes = parsed.data.actionAttributes;
-  if (parsed.data.conditions !== undefined) updates.conditions = parsed.data.conditions;
-  if (parsed.data.priority !== undefined) updates.priority = parsed.data.priority;
-  if (parsed.data.status !== undefined) updates.status = parsed.data.status;
+    const updates: Record<string, unknown> = { updatedAt: new Date() };
+    if (parsed.data.name !== undefined) updates.name = parsed.data.name;
+    if (parsed.data.description !== undefined)
+      updates.description = parsed.data.description;
+    if (parsed.data.effect !== undefined) updates.effect = parsed.data.effect;
+    if (parsed.data.subjectAttributes !== undefined)
+      updates.subjectAttributes = parsed.data.subjectAttributes;
+    if (parsed.data.resourceAttributes !== undefined)
+      updates.resourceAttributes = parsed.data.resourceAttributes;
+    if (parsed.data.actionAttributes !== undefined)
+      updates.actionAttributes = parsed.data.actionAttributes;
+    if (parsed.data.conditions !== undefined)
+      updates.conditions = parsed.data.conditions;
+    if (parsed.data.priority !== undefined)
+      updates.priority = parsed.data.priority;
+    if (parsed.data.status !== undefined) updates.status = parsed.data.status;
 
-  await db
-    .update(abacPolicies)
-    .set(updates)
-    .where(eq(abacPolicies.id, id));
+    await db.update(abacPolicies).set(updates).where(eq(abacPolicies.id, id));
 
-  const audit = getAuditLogger();
-  await audit.log({
-    tenantId,
-    action: "policy.updated",
-    actorId: c.get("user").id,
-    actorType: "user",
-    resourceType: "policy",
-    resourceId: id,
-    metadata: { fields: Object.keys(parsed.data) },
-  });
+    const audit = getAuditLogger();
+    await audit.log({
+      tenantId,
+      action: "policy.updated",
+      actorId: c.get("user").id,
+      actorType: "user",
+      resourceType: "policy",
+      resourceId: id,
+      metadata: { fields: Object.keys(parsed.data) },
+    });
 
-  const updated = await db
-    .select()
-    .from(abacPolicies)
-    .where(eq(abacPolicies.id, id))
-    .then((rows) => rows[0]);
+    const updated = await db
+      .select()
+      .from(abacPolicies)
+      .where(eq(abacPolicies.id, id))
+      .then((rows) => rows[0]);
 
-  return c.json({ data: updated });
-});
+    return c.json({ data: updated });
+  },
+);
 
 // DELETE /api/v1/policies/:id — Delete (deactivate) policy
-policies.delete("/:id", requirePermission(Permission.POLICIES_MANAGE), async (c) => {
-  const tenantId = c.get("tenantId");
-  const id = c.req.param("id");
-  const db = getDb();
+policies.delete(
+  "/:id",
+  requirePermission(Permission.POLICIES_MANAGE),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const id = c.req.param("id");
+    const db = getDb();
 
-  const existing = await db
-    .select()
-    .from(abacPolicies)
-    .where(and(eq(abacPolicies.id, id), eq(abacPolicies.tenantId, tenantId)))
-    .then((rows) => rows[0]);
+    const existing = await db
+      .select()
+      .from(abacPolicies)
+      .where(and(eq(abacPolicies.id, id), eq(abacPolicies.tenantId, tenantId)))
+      .then((rows) => rows[0]);
 
-  if (!existing) {
-    throw new NotFoundError("Policy", id);
-  }
+    if (!existing) {
+      throw new NotFoundError("Policy", id);
+    }
 
-  await db
-    .update(abacPolicies)
-    .set({ status: "inactive" as const, updatedAt: new Date() })
-    .where(eq(abacPolicies.id, id));
+    await db
+      .update(abacPolicies)
+      .set({ status: "inactive" as const, updatedAt: new Date() })
+      .where(eq(abacPolicies.id, id));
 
-  const audit = getAuditLogger();
-  await audit.log({
-    tenantId,
-    action: "policy.deleted",
-    actorId: c.get("user").id,
-    actorType: "user",
-    resourceType: "policy",
-    resourceId: id,
-  });
+    const audit = getAuditLogger();
+    await audit.log({
+      tenantId,
+      action: "policy.deleted",
+      actorId: c.get("user").id,
+      actorType: "user",
+      resourceType: "policy",
+      resourceId: id,
+    });
 
-  return c.json({ data: { id, status: "inactive" } });
-});
+    return c.json({ data: { id, status: "inactive" } });
+  },
+);
 
 export { policies };

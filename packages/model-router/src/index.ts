@@ -1,4 +1,8 @@
-export { ModelRouter, type ModelRouterConfig, type RoutingRule } from "./router.js";
+export {
+  ModelRouter,
+  type ModelRouterConfig,
+  type RoutingRule,
+} from "./router.js";
 export { type ModelProvider } from "./providers/base.js";
 export { ClaudeProvider } from "./providers/claude.js";
 export { OpenAIProvider } from "./providers/openai.js";

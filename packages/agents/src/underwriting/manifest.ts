@@ -4,7 +4,8 @@ export const UNDERWRITING_MANIFEST = {
   metadata: {
     name: "underwriting",
     version: "0.1.0",
-    description: "Analyzes T-12 operating statements and generates pro forma projections for CRE underwriting",
+    description:
+      "Analyzes T-12 operating statements and generates pro forma projections for CRE underwriting",
     tags: ["cre", "underwriting", "financial-analysis", "pro-forma"],
   },
   spec: {
@@ -29,10 +30,7 @@ export const UNDERWRITING_MANIFEST = {
       maxTokensPerRun: 300_000,
       timeoutMs: 900_000,
     },
-    permissions: [
-      "agents:run",
-      "tools:execute",
-    ],
+    permissions: ["agents:run", "tools:execute"],
     guardrails: {
       piiRedaction: true,
       auditLogging: true,

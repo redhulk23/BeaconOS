@@ -36,7 +36,10 @@ export async function verifyJwt(token: string): Promise<JwtPayload> {
   };
 }
 
-export async function signJwt(payload: JwtPayload, expiresIn = "8h"): Promise<string> {
+export async function signJwt(
+  payload: JwtPayload,
+  expiresIn = "8h",
+): Promise<string> {
   const issuer = process.env.JWT_ISSUER ?? "beacon-os";
   const audience = process.env.JWT_AUDIENCE ?? "beacon-os-api";
 

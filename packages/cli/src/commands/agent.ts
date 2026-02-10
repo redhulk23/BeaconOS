@@ -20,10 +20,7 @@ agentCommand
     [],
   )
   .action(
-    async (
-      name: string,
-      options: { description?: string; tags: string[] },
-    ) => {
+    async (name: string, options: { description?: string; tags: string[] }) => {
       const spinner = ora(`Creating agent "${name}"...`).start();
       const agentsDir = join(process.cwd(), "agents");
 
@@ -39,9 +36,10 @@ agentCommand
         process.exit(1);
       }
 
-      const tags = options.tags.length > 0
-        ? `\n    - ${options.tags.join("\n    - ")}`
-        : "";
+      const tags =
+        options.tags.length > 0
+          ? `\n    - ${options.tags.join("\n    - ")}`
+          : "";
 
       writeFileSync(
         manifestPath,
@@ -110,7 +108,9 @@ agentCommand
     const token = process.env.BEACON_TOKEN;
 
     if (!token) {
-      console.log(chalk.yellow("Set BEACON_TOKEN to list agents from the API."));
+      console.log(
+        chalk.yellow("Set BEACON_TOKEN to list agents from the API."),
+      );
       return;
     }
 
@@ -137,8 +137,7 @@ agentCommand
       }
 
       for (const agent of data) {
-        const statusColor =
-          agent.status === "active" ? chalk.green : chalk.dim;
+        const statusColor = agent.status === "active" ? chalk.green : chalk.dim;
         console.log(
           `  ${chalk.bold(agent.name)} v${agent.version} ${statusColor(`[${agent.status}]`)} ${chalk.dim(agent.id)}`,
         );

@@ -13,7 +13,9 @@ export const devCommand = new Command("dev")
         execSync("docker-compose up -d", { stdio: "pipe" });
         spinner.succeed("Docker services running (Postgres + Redis)");
       } catch {
-        spinner.warn("Docker services could not start — make sure Docker is running");
+        spinner.warn(
+          "Docker services could not start — make sure Docker is running",
+        );
       }
     }
 

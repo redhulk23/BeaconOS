@@ -66,13 +66,17 @@ export class GoogleProvider implements ModelProvider {
 
   constructor(apiKey?: string) {
     const { GoogleGenerativeAI } = require("@google/generative-ai");
-    this.client = new GoogleGenerativeAI(apiKey ?? process.env.GOOGLE_AI_API_KEY);
+    this.client = new GoogleGenerativeAI(
+      apiKey ?? process.env.GOOGLE_AI_API_KEY,
+    );
   }
 
   async complete(request: ModelRequest): Promise<ModelResponse> {
     const model = this.client.getGenerativeModel({ model: request.model });
     const { system, contents } = this.transformMessages(request.messages);
-    const tools = request.tools ? this.transformTools(request.tools) : undefined;
+    const tools = request.tools
+      ? this.transformTools(request.tools)
+      : undefined;
 
     const params: Record<string, unknown> = {
       contents,
@@ -89,14 +93,18 @@ export class GoogleProvider implements ModelProvider {
       params.tools = tools;
     }
 
-    const result = await model.generateContent(params as Parameters<typeof model.generateContent>[0]);
+    const result = await model.generateContent(
+      params as Parameters<typeof model.generateContent>[0],
+    );
     return this.transformResponse(result);
   }
 
   async *stream(request: ModelRequest): AsyncIterable<ModelStreamChunk> {
     const model = this.client.getGenerativeModel({ model: request.model });
     const { system, contents } = this.transformMessages(request.messages);
-    const tools = request.tools ? this.transformTools(request.tools) : undefined;
+    const tools = request.tools
+      ? this.transformTools(request.tools)
+      : undefined;
 
     const params: Record<string, unknown> = {
       contents,
@@ -113,7 +121,9 @@ export class GoogleProvider implements ModelProvider {
       params.tools = tools;
     }
 
-    const result = await model.generateContentStream(params as Parameters<typeof model.generateContentStream>[0]);
+    const result = await model.generateContentStream(
+      params as Parameters<typeof model.generateContentStream>[0],
+    );
 
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
@@ -212,7 +222,9 @@ export class GoogleProvider implements ModelProvider {
     ];
   }
 
-  private transformResponse(result: GoogleGenerateContentResponse): ModelResponse {
+  private transformResponse(
+    result: GoogleGenerateContentResponse,
+  ): ModelResponse {
     const candidate = result.response.candidates?.[0];
     let content = "";
     const toolCalls: ModelToolCall[] = [];
